@@ -17,14 +17,17 @@
 #    - name: copy hosts # 将处理好的公钥分发给各个机器上
 #      copy: src=./ssh/authorized_keys.log dest=/root/.ssh/authorized_keys mode=0600
 
-#    - name: delete selinux
-#      shell: rm -rf /etc/selinux/config
-#
-#    - name: copy config
-#      copy: src=./templates/etc/selinux/config dest=/etc/selinux/config mode=0644
+#    - name: disable selinux
+#      lineinfile:
+#        dest: /etc/selinux/config
+#        regexp: '^SELINUX'
+#        line: 'SELINUX=disabled'
 
 #    - name: stop firewalld
-#      shell: systemctl stop firewalld
+#      shell: systemctl stop firewalld && systemctl disable firewalld
+#
+#    - name: restart
+#      shell: reboot
 
 #    - name: install epal
 #      shell: curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
@@ -196,8 +199,8 @@
 #    - name: 修改'21'主机daemon.json中的bip信息
 #      lineinfile:
 #        dest: /etc/docker/daemon.json
-#        regexp: '^(.*)"bip":'
-#        line: '  "bip: 172.21.1/24",'
+#        regexp: '^(.*)"bip'
+#        line: '  "bip": "172.7.21.1/24",'
 #
 #- hosts: '22'
 #  user: root
@@ -205,8 +208,8 @@
 #    - name: 修改'22'主机daemon.json中的bip信息
 #      lineinfile:
 #        dest: /etc/docker/daemon.json
-#        regexp: '^(.*)"bip":'
-#        line: '  "bip: 172.22.1/24",'
+#        regexp: '^(.*)"bip'
+#        line: '  "bip": "172.7.22.1/24",'
 #
 #- hosts: '200'
 #  user: root
@@ -214,11 +217,68 @@
 #    - name: 修改'200'主机daemon.json中的bip信息
 #      lineinfile:
 #        dest: /etc/docker/daemon.json
-#        regexp: '^(.*)"bip":'
-#        line: '  "bip: 172.200.1/24",'
-
+#        regexp: '^(.*)"bip'
+#        line: '  "bip": "172.7.200.1/24",'
+#
 #- hosts: docker
 #  user: root
 #  tasks:
 #    - name: 启动docker并设置开机自启
 #      shell: systemctl restart docker && systemctl enable docker
+
+#- hosts: '200'
+#  user: root
+#  tasks:
+#    - name: 下载harbor
+#      shell:
+#        cmd: wget https://github.com/goharbor/harbor/releases/download/v2.2.2/harbor-offline-installer-v2.2.2.tgz
+#        chdir: /opt
+
+#    - name: 下载harbor
+#      copy: src=./templates/opt/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
+#
+#    - name: 解压
+#      shell: tar xf /opt/harbor-offline-installer-v2.2.2.tgz -C /opt/
+
+#    - name: 重命名harbor目录名
+#      shell:
+#        cmd: mv harbor/ harbor-v2.2.2
+#        chdir: /opt
+
+#    - name: 设置harbor软连接
+#      shell: ln -s /opt/harbor-v2.2.2 /opt/harbor
+
+##    - name: 拷贝harbor.yml.tmpl
+##     shell: cp /opt/harbor/harbor.yml.tmpl /opt/harbor/harbor.yml
+
+#    - name: copy harbor.yml到/data/harbor目录下
+#      copy: src=./templates/opt/harbor/harbor.yml dest=/opt/harbor/harbor.yml mode=0644
+
+#    - name: 创建相应目录
+#      shell: mkdir -p /data/harbor/logs
+
+#    - name: harbor依赖于docker-compose，因此需要安装docker-compose
+#      shell: yum install docker-compose -y
+
+#    - name: 执行harbor目录下的install.sh安装脚本
+#      shell: sh /opt/harbor/install.sh
+
+#    - name: 安装nginx
+#      shell: yum install nginx -y
+
+#    - name: 设置nginx代理
+#      copy: src=./templates/etc/nginx/conf.d/harbor.od.com.conf dest=/etc/nginx/conf.d/harbor.od.com.conf mode=0644
+#
+#    - name: 启动nginx并设置开机自启
+#      shell: systemctl start nginx && systemctl enable nginx
+
+#- hosts: '11'
+#  user: root
+#  tasks:
+##    - name: 在7-11中添加一条A记录
+##      blockinfile:
+##        path: /var/named/od.com.zone
+##        insertafter: '^dns(.*)'
+##        block: 'harbor           A 10.4.7.200'
+#    - name: 重启named
+#      shell: systemctl restart named
