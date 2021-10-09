@@ -1,0 +1,18 @@
+---
+- hosts: '200'
+  user: root
+  tasks:
+#    - name: 拉取nginx镜像
+#      shell: docker pull nginx:1.7.9
+
+#    - name: 给nginx镜像打标签
+#      shell: docker tag 84581e99d807 harbor.od.com/public/nginx:v1.7.9
+#
+#    - name: 推送nginx镜像, 如果没有登陆harbor有可能会报错，请手动输入docker login harbor.od.com登陆
+#      shell: ls
+#
+#    - name: 再次推送nginx镜像
+#      shell: docker push harbor.od.com/public/nginx:v1.7.9
+
+    - name: 测试测试
+      shell: ls
