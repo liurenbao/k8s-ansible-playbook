@@ -1,10 +1,36 @@
-# k8s
-
 Docker与K8S学习笔记。
 
-## 注意事项
+## 运行命令
+```bash
+ansible-playbook -i hosts xxx.yml
+```
+其中xxx是需要执行的yml文件名。
 
-需要修改本地的或者ansible所在机器的/etc/ansible/hosts中的配置文件信息
+
+
+## 安装注意事项
+
+### 关于playbook
+
+这不是一个优雅的ansible playbook项目,原因如下：
+
+* 需要手动进入页面去进行操作，再执行后续命令。
+* 其次是由于内功不足，某些操作也不够优雅。
+
+**有强烈的代码洁癖的请跳过，以免引起不适。**
+
+**或者也可以提issue告知修改建议，不胜感激！**
+
+### 关于注释
+
+在yml文件中有许多被注释的内容，需要注意的是，因为是边运行边测，因此是注释已经运行过的命令，再运行新的命令。
+
+如果看到注释的`#`是两个或以上的，说明是不需要运行的内容，但可以参考。
+
+
+
+### 配置hosts文件
+
 ```text
 [nodes]
 node01 ansible_ssh_user="root" ansible_ssh_host=10.4.7.11 ansible_ssh_port=22 ansible_ssh_pass="1"
@@ -35,4 +61,22 @@ node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 a
 ```
 
 > 中括号 `[]` 中的内容可以理解为别名，可以在ansible playbook中使用`'11'`来表示是`10.4.7.11`那台主机，使用`nodes`来表示所有主机。
+
+
+
+### 修改宿主机DNS
+
+建议在安装部署好harbor之后，再修改DNS为`10.4.7.11`，然后就可以通过宿主机访问harbor页面。
+
+
+
+## harbor页面配置
+
+访问`harbor.od.com`页面，输入账户密码，新建项目，项目名为**public**。
+
+> 默认账号: admin 密码: Harbor12345
+>
+> 账号密码可在`/opt/harbor/harbor.yml`去修改
+
+![](https://borinboy.oss-cn-shanghai.aliyuncs.com/huan/20211009221842.png)
 
