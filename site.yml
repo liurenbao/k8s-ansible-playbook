@@ -1,0 +1,113 @@
+---
+#- hosts: nodes
+#  user: root
+#  tasks:
+#    - name: copy rsa.pub
+#      authorized_key: user=root key="{{ lookup('file', '/Users/liuhuan/.ssh/id_rsa.pub') }}"
+#      tags:
+#        - sshkey
+
+#    - name: fetch copy # 将其它机器公钥拷贝到本机
+#      fetch: src=/root/.ssh/id_rsa.pub dest=/Users/liuhuan/Documents/Ansible/K8S/ssh
+#
+#    - name: append file authorized_keys.log # 公钥拼接成一个文件
+#      shell: find /Users/liuhuan/Documents/Ansible/K8S/ssh/* -type f -exec sh -c 'cat {}>>/Users/liuhuan/Documents/Ansible/K8S/ssh/authorized_keys.log' \;
+#      run_once: true
+
+#    - name: copy hosts # 将处理好的公钥分发给各个机器上
+#      copy: src=./ssh/authorized_keys.log dest=/root/.ssh/authorized_keys mode=0600
+
+#    - name: delete selinux
+#      shell: rm -rf /etc/selinux/config
+#
+#    - name: copy config
+#      copy: src=./templates/etc/selinux/config dest=/etc/selinux/config mode=0644
+
+#    - name: stop firewalld
+#      shell: systemctl stop firewalld
+
+#    - name: install epal
+#      shell: curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+
+#    - name: install tools
+#      shell: yum install wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
+
+# 主机和业务需要分开，但是主机上又跑了业务
+# 因此需要设置主机域和业务域，能够将其关联起来
+# 后期维护时，如果业务变更（从跑mysql服务变成跑redis服务，没有任何影响）
+#- hosts: '11'
+#  user: root
+#  tasks:
+#    - name: set host name
+#      shell: hostnamectl set-hostname hdss7-11.host.com
+#
+#- hosts: '12'
+#  user: root
+#  tasks:
+#    - name: set host name
+#      shell: hostnamectl set-hostname hdss7-12.host.com
+#
+#- hosts: '21'
+#  user: root
+#  tasks:
+#    - name: set host name
+#      shell: hostnamectl set-hostname hdss7-21.host.com
+#
+#- hosts: '22'
+#  user: root
+#  tasks:
+#    - name: set host name
+#      shell: hostnamectl set-hostname hdss7-22.host.com
+#
+#- hosts: '200'
+#  user: root
+#  tasks:
+#    - name: set host name
+#      shell: hostnamectl set-hostname hdss7-200.host.com
+
+#- hosts: nodes
+#  user: root
+#  tasks:
+#    - name: 查看getenforce
+#      shell: getenforce
+
+- hosts: '11'
+  user: root
+  tasks:
+#    - name: install bind, 用来自建DNS
+#      shell: yum install bind -y
+
+#    - name: edit named.conf
+#      copy: src=./templates/etc/named.conf dest=/etc/named.conf mode=0640
+
+#    - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
+#      shell: named-checkconf
+
+##   不能加空格
+##   - name: echo zone content to named.zone file
+##      blockinfile:
+##        dest=/etc/named.rfc1912.zones
+##        backup=yes
+##        content="
+##        zone "host.com" IN {\n
+##                type  master;\n
+##                file  "host.com.zone";\n
+##                allow-update { 10.4.7.11; };\n
+##        };\n
+##
+##        zone "od.com" IN {\n
+##                type  master;\n
+##                file  "od.com.zone";\n
+##                allow-update { 10.4.7.11; };\n
+##        };\n
+##        "
+
+#      - name: edit named.conf
+#        copy: src=./templates/etc/named.rfc1912.zones dest=/etc/named.rfc1912.zones mode=0640
+
+#      - name: edit /var/named/host.com.zone file
+#        copy: src=./templates/var/named/host.com.zone dest=/var/named/host.com.zone mode=0644
+
+      - name: edit /var/named/host.com.zone file
+        copy: src=./templates/var/named/od.com.zone dest=/var/named/od.com.zone mode=0644
+
