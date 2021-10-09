@@ -167,4 +167,58 @@
 #        cmd: cfssl gencert -initca /opt/certs/ca-csr.json | cfssl-json -bare ca
 #        # 该命令必须在指定目录执行，因此需要使用chdir参数来指定目录
 #        chdir: /opt/certs
+
+#- hosts: docker
+#  user: root
+#  tasks:
+##      可能会因为网络原因下载安装失败，不推荐使用
+##    - name: 删除本地源
+##      shell: rm -rf /etc/yum.repos.d/local.repo
+##
+##    - name: 安装docker
+##      shell: cfssl gencert -initca ca-csr.json | cfssl-json -bare ca
+
+#    - name: 安装docker源，推荐使用下面的安装方式
+#      shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 #
+#    - name: 安装docker
+#      shell: yum install docker -y
+
+#    - name: 创建docker相关目录
+#      shell: mkdir -p /etc/docker /data/docker
+#
+#    - name: 编辑/etc/docker/daemon.json文件
+#      copy: src=./templates/etc/docker/daemon.json dest=/etc/docker/daemon.json mode=0644
+
+#- hosts: '21'
+#  user: root
+#  tasks:
+#    - name: 修改'21'主机daemon.json中的bip信息
+#      lineinfile:
+#        dest: /etc/docker/daemon.json
+#        regexp: '^(.*)"bip":'
+#        line: '  "bip: 172.21.1/24",'
+#
+#- hosts: '22'
+#  user: root
+#  tasks:
+#    - name: 修改'22'主机daemon.json中的bip信息
+#      lineinfile:
+#        dest: /etc/docker/daemon.json
+#        regexp: '^(.*)"bip":'
+#        line: '  "bip: 172.22.1/24",'
+#
+#- hosts: '200'
+#  user: root
+#  tasks:
+#    - name: 修改'200'主机daemon.json中的bip信息
+#      lineinfile:
+#        dest: /etc/docker/daemon.json
+#        regexp: '^(.*)"bip":'
+#        line: '  "bip: 172.200.1/24",'
+
+#- hosts: docker
+#  user: root
+#  tasks:
+#    - name: 启动docker并设置开机自启
+#      shell: systemctl restart docker && systemctl enable docker
