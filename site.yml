@@ -32,9 +32,9 @@
 #    - name: install tools
 #      shell: yum install wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
 
-# 主机和业务需要分开，但是主机上又跑了业务
-# 因此需要设置主机域和业务域，能够将其关联起来
-# 后期维护时，如果业务变更（从跑mysql服务变成跑redis服务，没有任何影响）
+## 主机和业务需要分开，但是主机上又跑了业务
+## 因此需要设置主机域和业务域，能够将其关联起来
+## 后期维护时，如果业务变更（从跑mysql服务变成跑redis服务，没有任何影响）
 #- hosts: '11'
 #  user: root
 #  tasks:
@@ -71,9 +71,9 @@
 #    - name: 查看getenforce
 #      shell: getenforce
 
-- hosts: '11'
-  user: root
-  tasks:
+#- hosts: '11'
+#  user: root
+#  tasks:
 #    - name: install bind, 用来自建DNS
 #      shell: yum install bind -y
 
@@ -105,9 +105,66 @@
 #      - name: edit named.conf
 #        copy: src=./templates/etc/named.rfc1912.zones dest=/etc/named.rfc1912.zones mode=0640
 
+##       视频配的txt命令文件有坑，named服务起不来，需要按照templates文件中的格式来
 #      - name: edit /var/named/host.com.zone file
 #        copy: src=./templates/var/named/host.com.zone dest=/var/named/host.com.zone mode=0644
+#
+#      - name: edit /var/named/host.com.zone file
+#        copy: src=./templates/var/named/od.com.zone dest=/var/named/od.com.zone mode=0644
+#
+#      - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
+#        shell: named-checkconf
 
-      - name: edit /var/named/host.com.zone file
-        copy: src=./templates/var/named/od.com.zone dest=/var/named/od.com.zone mode=0644
+#      - name: 启动named服务并设置为开机自启动 想要查看输出内容，在命令后加上 -vv 参数
+#        shell: systemctl start named && systemctl enable named
+#
+#      - name: check dig record
+#        shell: dig -t A hdss7-21.host.com @10.4.7.11 +short
 
+#- hosts: nodes
+#  user: root
+#  tasks:
+#    - name: 修改DNS为7.11
+#      lineinfile:
+#        dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+#        regexp: '^DNS1=223.5.5.5'
+#        line: 'DNS1=10.4.7.11'
+#
+#    - name: 重启网卡
+#      shell: systemctl restart network
+
+#- hosts: '200'
+#  user: root
+#  tasks:
+##      使用wget会因为网络原因导致下载失败，因此已经在template中提供
+##    - name: 安装cfssl证书
+##      shell: wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -O /usr/bin/cfssl
+##
+##    - name: 安装cfssl证书
+##      shell: wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -O /usr/bin/cfssl-json
+##
+##    - name: 安装cfssl证书
+##      shell: wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -O /usr/bin/cfssl-certinfo
+
+#    - name: 安装cfssl证书
+#      copy: src=./templates/usr/bin/cfssl_linux-amd64 dest=/usr/bin/cfssl mode=0755
+#
+#    - name: 安装cfssl证书
+#      copy: src=./templates/usr/bin/cfssljson_linux-amd64 dest=/usr/bin/cfssl-json mode=0755
+#
+#    - name: 安装cfssl证书
+#      copy: src=./templates/usr/bin/cfssl-certinfo_linux-amd64 dest=/usr/bin/cfssl-certinfo mode=0755
+
+#    - name: 创建certs目录
+#      shell: mkdir -p /opt/certs
+#
+#    - name: 手撕ca-csr.json文件
+#      copy: src=./templates/opt/certs/ca-csr.json dest=/opt/certs/ca-csr.json mode=0644
+
+#    - name: 手撕证书命令
+#      shell:
+#        # 必须使用cfssl-json将证书输出为承载式证书，而不是输出到终端
+#        cmd: cfssl gencert -initca /opt/certs/ca-csr.json | cfssl-json -bare ca
+#        # 该命令必须在指定目录执行，因此需要使用chdir参数来指定目录
+#        chdir: /opt/certs
+#
