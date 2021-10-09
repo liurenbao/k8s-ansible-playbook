@@ -275,10 +275,11 @@
 #- hosts: '11'
 #  user: root
 #  tasks:
-##    - name: 在7-11中添加一条A记录
-##      blockinfile:
-##        path: /var/named/od.com.zone
-##        insertafter: '^dns(.*)'
-##        block: 'harbor           A 10.4.7.200'
+#    - name: 在7-11中添加一条A记录
+#      blockinfile:
+#        path: /var/named/od.com.zone
+#        insertafter: '^dns(.*)'
+#        block: 'harbor           A 10.4.7.200'
+
 #    - name: 重启named
 #      shell: systemctl restart named
