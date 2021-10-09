@@ -12,7 +12,7 @@ ansible-playbook -i hosts xxx.yml
 
 ### 关于playbook
 
-这不是一个优雅的ansible playbook项目,原因如下：
+这不是一个优雅的ansible playbook项目，原因如下：
 
 * 需要手动进入页面去进行操作，再执行后续命令。
 * 其次是由于内功不足，某些操作也不够优雅。
