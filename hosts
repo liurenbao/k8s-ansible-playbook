@@ -29,3 +29,7 @@ node05
 node02
 node03
 node04
+
+[k8s]
+node03
+node04
