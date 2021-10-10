@@ -1,0 +1,197 @@
+---
+#- hosts: '200'
+#  user: root
+#  tasks:
+#      # ca-config证书中，peer表示互相通信,服务端和客户端找对方通信都需要证书
+#    - name: 创建基于根证书的ca-config文件，因为etcd也是需要通过ssl通信的
+#      copy: src=./packages/opt/certs/ca-config.json dest=/opt/certs/ca-config.json mode=0644
+#
+#    - name: 创建基于根证书的etcd-peer-csr文件
+#      copy: src=./packages/opt/certs/etcd-peer-csr.json dest=/opt/certs/etcd-peer-csr.json mode=0644
+#
+#    - name: 生成证书文件
+#      shell:
+#        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer etcd-peer-csr.json | cfssl-json -bare etcd-peer
+#        chdir: /opt/certs
+
+- hosts: etcd
+  user: root
+  tasks:
+    - name: 创建目录
+      shell: mkdir -p /opt/src
+
+    - name: 添加etcd用户
+      shell: useradd -s /sbin/nologin -M etcd
+
+    - name: 下载etcd
+      copy:
+        src: ./packages/opt/etcd-v3.1.20-linux-amd64.tar.gz
+        dest: /opt/etcd-v3.1.20-linux-amd64.tar.gz
+        mode: 0644
+
+    - name: 解压etcd
+      shell:
+        cmd: tar -zxvf etcd-v3.1.20-linux-amd64.tar.gz
+        chdir: /opt
+
+    - name: 重命名
+      shell:
+        cmd: mv etcd-v3.1.20-linux-amd64 etcd-v3.1.20
+        chdir: /opt
+
+    - name: 做软链接，方便以后升级
+      shell: ln -s /opt/etcd-v3.1.20 /opt/etcd
+
+    - name: 创建etcd相关目录
+      shell: mkdir -p /opt/etcd/certs /data/etcd /data/logs/etcd-server
+
+    - name: 从200机器上复制etcd证书文件
+      shell: scp -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/etcd*.pem /opt/etcd/certs
+
+    - name: 从200机器上复制ca私钥文件，绝密，必须要保管好
+      shell: scp -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/ca.pem /opt/etcd/certs
+
+#    - name: 分发etcd-server-startup.sh文件
+#      template:
+#        src: "roles/etcd/templates/etcd-server-startup.sh.j2"
+#        dest: "/opt/etcd/etcd-server-startup.sh"
+#        mode: 0755
+#
+#    - name: 修改sh文件中的IP信息
+#      lineinfile:
+#        dest: /opt/etcd/etcd-server-startup.sh
+#        regexp: '^(.*)./etcd'
+#        line: '       ./etcd --name etcd-server-7-{{ item }} \'
+#      with_items:
+#        - '{{ ip_endswith }}'
+#
+#    - name: 修改sh文件中的IP信息
+#      lineinfile:
+#        dest: /opt/etcd/etcd-server-startup.sh
+#        regexp: '^(.*)--listen-peer-urls'
+#        line: '       --listen-peer-urls https://10.4.7.{{ item }}:2380 \'
+#      with_items:
+#        - '{{ ip_endswith }}'
+
+
+##    - name: 从200机器上复制证书文件
+##      synchronize:
+##        src: /opt/certs/etcd*.pem
+##        dest: /opt/etcd/certs
+##        mode: pull
+##      delegate_to: '10.4.7.200'
+
+    - name: 创建etcd启动脚本
+      copy:
+        src: ./packages/opt/etcd/etcd-server-startup.sh
+        dest: /opt/etcd/etcd-server-startup.sh
+        mode: 0755
+
+    - name: 更改/opt/etcd-v3.1.20目录所属用户组为etcd
+      shell: chown -R etcd.etcd /opt/etcd-v3.1.20/
+
+    - name: 更改/data/etcd和/data/logs/etcd-server/ 所属用户组为etcd
+      shell: chown -R etcd.etcd /data/etcd && chown -R etcd.etcd /data/logs/etcd-server/
+
+    - name: 下载supervisor
+      shell: yum install supervisor -y
+
+    - name: 启动supervisor并设置开机自启动
+      shell: systemctl start supervisord && systemctl enable supervisord
+
+    - name: 创建etcd-server的启动配置
+      copy:
+        src: ./packages/etc/supervisord.d/etcd-server.ini
+        dest: /etc/supervisord.d/etcd-server.ini
+        mode: 0644
+
+#- hosts: '12'
+#  user: root
+#  tasks:
+#    - name: 修改etcd-server.ini中的IP地址
+#      lineinfile:
+#        dest: /etc/supervisord.d/etcd-server.ini
+#        regexp: '^[program:'
+#        line: '[program:etcd-server-7-12]'
+#
+#    - name: 修改etcd-server-start.sh脚本
+#      lineinfile:
+#        dest: /opt/etcd/etcd-server-startup.sh
+#        regexp: '^./etcd'
+#        line: './etcd --name etcd-server-7-12 \'
+#
+#    - name: 修改etcd-server-start.sh脚本
+#      lineinfile:
+#        dest: /opt/etcd/etcd-server-startup.sh
+#        regexp: '^(.*)--listen-peer-urls'
+#        line: '       --listen-peer-urls https://10.4.7.12:2380 \'
+#
+#    - name: 修改etcd-server-start.sh脚本
+#      lineinfile:
+#        dest: /opt/etcd/etcd-server-startup.sh
+#        regexp: '^(.*)--initial-advertise-peer'
+#        line: '       --initial-advertise-peer-urls https://10.4.7.12:2380 \'
+
+
+- hosts: '21'
+  user: root
+  tasks:
+    - name: 修改etcd-server.ini中的IP地址
+      lineinfile:
+        dest: /etc/supervisord.d/etcd-server.ini
+        regexp: '^[program:'
+        line: '[program:etcd-server-7-21]'
+
+    - name: 修改etcd-server-start.sh脚本
+      lineinfile:
+        dest: /opt/etcd/etcd-server-startup.sh
+        regexp: '^./etcd'
+        line: './etcd --name etcd-server-7-21 \'
+
+    - name: 修改etcd-server-start.sh脚本
+      lineinfile:
+        dest: /opt/etcd/etcd-server-startup.sh
+        regexp: '^(.*)--listen-peer-urls'
+        line: '       --listen-peer-urls https://10.4.7.21:2380 \'
+
+    - name: 修改etcd-server-start.sh脚本
+      lineinfile:
+        dest: /opt/etcd/etcd-server-startup.sh
+        regexp: '^(.*)--initial-advertise-peer'
+        line: '       --initial-advertise-peer-urls https://10.4.7.21:2380 \'
+
+- hosts: '22'
+  user: root
+  tasks:
+    - name: 修改etcd-server.ini中的IP地址
+      lineinfile:
+        dest: /etc/supervisord.d/etcd-server.ini
+        regexp: '^[program:'
+        line: '[program:etcd-server-7-22]'
+
+    - name: 修改etcd-server-start.sh脚本
+      lineinfile:
+        dest: /opt/etcd/etcd-server-startup.sh
+        regexp: '^./etcd'
+        line: './etcd --name etcd-server-7-22 \'
+
+    - name: 修改etcd-server-start.sh脚本
+      lineinfile:
+        dest: /opt/etcd/etcd-server-startup.sh
+        regexp: '^(.*)--listen-peer-urls'
+        line: '       --listen-peer-urls https://10.4.7.22:2380 \'
+
+    - name: 修改etcd-server-start.sh脚本
+      lineinfile:
+        dest: /opt/etcd/etcd-server-startup.sh
+        regexp: '^(.*)--initial-advertise-peer'
+        line: '       --initial-advertise-peer-urls https://10.4.7.22:2380 \'
+
+- hosts: etcd
+  user: root
+  tasks:
+    - name: 执行supervisorctl update命令
+      shell: supervisorctl update
+
+    - name: 等待supervisor启动，需要等待20秒左右
+      pause: seconds=20

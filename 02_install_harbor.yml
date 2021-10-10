@@ -8,7 +8,7 @@
 #        chdir: /opt
 
 #    - name: 下载harbor
-#      copy: src=./templates/opt/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
+#      copy: src=./packages/opt/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
 #
 #    - name: 解压
 #      shell: tar xf /opt/harbor-offline-installer-v2.2.2.tgz -C /opt/
@@ -25,7 +25,7 @@
 ##     shell: cp /opt/harbor/02_install_harbor.yml.tmpl /opt/harbor/02_install_harbor.yml
 
 #    - name: copy harbor.yml到/data/harbor目录下
-#      copy: src=./templates/opt/harbor/02_install_harbor.yml dest=/opt/harbor/02_install_harbor.yml mode=0644
+#      copy: src=./packages/opt/harbor/02_install_harbor.yml dest=/opt/harbor/02_install_harbor.yml mode=0644
 
 #    - name: 创建相应目录
 #      shell: mkdir -p /data/harbor/logs
@@ -40,7 +40,7 @@
 #      shell: yum install nginx -y
 
 #    - name: 设置nginx代理
-#      copy: src=./templates/etc/nginx/conf.d/harbor.od.com.conf dest=/etc/nginx/conf.d/harbor.od.com.conf mode=0644
+#      copy: src=./packages/etc/nginx/conf.d/harbor.od.com.conf dest=/etc/nginx/conf.d/harbor.od.com.conf mode=0644
 #
 #    - name: 启动nginx并设置开机自启
 #      shell: systemctl start nginx && systemctl enable nginx
@@ -50,7 +50,7 @@
   tasks:
 #    - name: 在7-11中添加一条A记录
 #      blockinfile:
-#        path: /var/named/od.com.zone
+#        path: /vars/named/od.com.zone
 #        insertafter: '^dns(.*)'
 #        block: 'harbor           A 10.4.7.200'
 

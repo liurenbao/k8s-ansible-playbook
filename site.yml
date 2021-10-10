@@ -1,0 +1,6 @@
+---
+
+- name: 安装etcd
+  remote_user: root
+  roles:
+    - etcd

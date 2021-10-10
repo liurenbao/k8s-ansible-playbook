@@ -1,0 +1,67 @@
+---
+#- hosts: '200'
+#  user: root
+#  tasks:
+#    - name: 下载harbor
+#      shell:
+#        cmd: wget https://github.com/goharbor/harbor/releases/download/v2.2.2/harbor-offline-installer-v2.2.2.tgz
+#        chdir: /opt
+
+#    - name: 下载harbor
+#      copy: src=./packages/opt/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
+#
+#    - name: 解压
+#      shell: tar xf /opt/harbor-offline-installer-v2.2.2.tgz -C /opt/
+
+#    - name: 重命名harbor目录名
+#      shell:
+#        cmd: mv harbor/ harbor-v2.2.2
+#        chdir: /opt
+
+#    - name: 设置harbor软连接
+#      shell: ln -s /opt/harbor-v2.2.2 /opt/harbor
+
+##    - name: 拷贝harbor.yml.tmpl
+##     shell: cp /opt/harbor/02_install_harbor.yml.tmpl /opt/harbor/02_install_harbor.yml
+
+#    - name: copy harbor.yml到/data/harbor目录下
+#      copy: src=./packages/opt/harbor/02_install_harbor.yml dest=/opt/harbor/02_install_harbor.yml mode=0644
+
+#    - name: 创建相应目录
+#      shell: mkdir -p /data/harbor/logs
+
+#    - name: harbor依赖于docker-compose，因此需要安装docker-compose
+#      shell: yum install docker-compose -y
+
+#    - name: 执行harbor目录下的install.sh安装脚本
+#      shell: sh /opt/harbor/install.sh
+
+#    - name: 安装nginx
+#      shell: yum install nginx -y
+
+#    - name: 设置nginx代理
+#      copy: src=./packages/etc/nginx/conf.d/harbor.od.com.conf dest=/etc/nginx/conf.d/harbor.od.com.conf mode=0644
+#
+#    - name: 启动nginx并设置开机自启
+#      shell: systemctl start nginx && systemctl enable nginx
+
+- hosts: '11'
+  user: root
+  tasks:
+#    - name: 在7-11中添加一条A记录
+#      blockinfile:
+#        path: /vars/named/od.com.zone
+#        insertafter: '^dns(.*)'
+#        block: 'harbor           A 10.4.7.200'
+
+#    - name: 重启named
+#      shell: systemctl restart named
+
+    - name: harbor已部署完成，请手动设置DNS并访问harbor.od.com页面，配置public等信息
+      shell: ls
+
+    - name: harbor已部署完成，请手动设置DNS并访问harbor.od.com页面，配置public等信息
+      shell: ls
+
+    - name: harbor已部署完成，请手动设置DNS并访问harbor.od.com页面，配置public等信息
+      shell: ls
