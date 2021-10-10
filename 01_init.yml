@@ -84,7 +84,7 @@
 #      shell: yum install bind -y
 
 #    - name: edit named.conf
-#      copy: src=./templates/etc/named.conf dest=/etc/named.conf mode=0640
+#      copy: src=./packages/etc/named.conf dest=/etc/named.conf mode=0640
 
 #    - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
 #      shell: named-checkconf
@@ -109,13 +109,13 @@
 ##        "
 
 #      - name: edit named.conf
-#        copy: src=./templates/etc/named.rfc1912.zones dest=/etc/named.rfc1912.zones mode=0640
+#        copy: src=./packages/etc/named.rfc1912.zones dest=/etc/named.rfc1912.zones mode=0640
 
-#      - name: edit /var/named/host.com.zone file
-#        copy: src=./templates/var/named/host.com.zone dest=/var/named/host.com.zone mode=0644
+#      - name: edit /vars/named/host.com.zone file
+#        copy: src=./packages/vars/named/host.com.zone dest=/vars/named/host.com.zone mode=0644
 #
-#      - name: edit /var/named/host.com.zone file
-#        copy: src=./templates/var/named/od.com.zone dest=/var/named/od.com.zone mode=0644
+#      - name: edit /vars/named/host.com.zone file
+#        copy: src=./packages/vars/named/od.com.zone dest=/vars/named/od.com.zone mode=0644
 #
 #      - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
 #        shell: named-checkconf
@@ -141,7 +141,7 @@
 #- hosts: '200'
 #  user: root
 #  tasks:
-##      使用wget会因为网络原因导致下载失败，因此已经在template中提供
+##      使用wget会因为网络原因导致下载失败，因此已经在packages中提供
 ##    - name: 安装cfssl证书
 ##      shell: wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -O /usr/bin/cfssl
 ##
@@ -152,19 +152,19 @@
 ##      shell: wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -O /usr/bin/cfssl-certinfo
 
 #    - name: 安装cfssl证书
-#      copy: src=./templates/usr/bin/cfssl_linux-amd64 dest=/usr/bin/cfssl mode=0755
+#      copy: src=./packages/usr/bin/cfssl_linux-amd64 dest=/usr/bin/cfssl mode=0755
 #
 #    - name: 安装cfssl证书
-#      copy: src=./templates/usr/bin/cfssljson_linux-amd64 dest=/usr/bin/cfssl-json mode=0755
+#      copy: src=./packages/usr/bin/cfssljson_linux-amd64 dest=/usr/bin/cfssl-json mode=0755
 #
 #    - name: 安装cfssl证书
-#      copy: src=./templates/usr/bin/cfssl-certinfo_linux-amd64 dest=/usr/bin/cfssl-certinfo mode=0755
+#      copy: src=./packages/usr/bin/cfssl-certinfo_linux-amd64 dest=/usr/bin/cfssl-certinfo mode=0755
 
 #    - name: 创建certs目录
 #      shell: mkdir -p /opt/certs
 #
 #    - name: 手撕ca-csr.json文件
-#      copy: src=./templates/opt/certs/ca-csr.json dest=/opt/certs/ca-csr.json mode=0644
+#      copy: src=./packages/opt/certs/ca-csr.json dest=/opt/certs/ca-csr.json mode=0644
 
 #    - name: 手撕证书命令
 #      shell:
@@ -193,7 +193,7 @@
 #      shell: mkdir -p /etc/docker /data/docker
 #
 #    - name: 编辑/etc/docker/daemon.json文件
-#      copy: src=./templates/etc/docker/daemon.json dest=/etc/docker/daemon.json mode=0644
+#      copy: src=./packages/etc/docker/daemon.json dest=/etc/docker/daemon.json mode=0644
 
 #- hosts: '21'
 #  user: root
