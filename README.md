@@ -31,13 +31,13 @@ ansible-playbook -i hosts xxx.yml
 
 ### 集群规划
 
-| IP         | 节点               | 服务 | 服务   | 服务  | 服务   |
-| ---------- | ------------------ | ---- | ------ | ----- | ------ |
-| 10.4.7.11  | hdss7-11.host.com  |      |        | proxy |        |
-| 10.4.7.12  | hdss7-12.host.com  | etcd |        | proxy |        |
-| 10.4.7.21  | hdss7-21.host.com  | etcd | docker |       | node   |
-| 10.4.7.22  | hdss7-22.host.com  | etcd | docker |       | node   |
-| 10.4.7.200 | hdss7-200.host.com |      | docker |       | master |
+| IP         | 节点               |  节点  | docker | proxy | etcd |
+| ---------- | ------------------ | :----: | :----: | :---: | :--: |
+| 10.4.7.11  | hdss7-11.host.com  | master |        |   Y   |      |
+| 10.4.7.12  | hdss7-12.host.com  |        |        |   Y   |  Y   |
+| 10.4.7.21  | hdss7-21.host.com  |  node  |   Y    |       |  Y   |
+| 10.4.7.22  | hdss7-22.host.com  |  node  |   Y    |       |  Y   |
+| 10.4.7.200 | hdss7-200.host.com |        |   Y    |       |      |
 
 ### 配置hosts文件
 
