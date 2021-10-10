@@ -26,5 +26,6 @@ node04
 node05
 
 [etcd]
+node02
 node03
 node04

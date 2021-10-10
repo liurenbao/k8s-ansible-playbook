@@ -27,7 +27,17 @@ ansible-playbook -i hosts xxx.yml
 
 如果看到注释的`#`是两个或以上的，说明是不需要运行的内容，但可以参考。
 
+### 关于集群规划
 
+### 集群规划
+
+| IP         | 节点               | 服务 | 服务   | 服务  | 服务   |
+| ---------- | ------------------ | ---- | ------ | ----- | ------ |
+| 10.4.7.11  | hdss7-11.host.com  |      |        | proxy |        |
+| 10.4.7.12  | hdss7-12.host.com  | etcd |        | proxy |        |
+| 10.4.7.21  | hdss7-21.host.com  | etcd | docker |       | node   |
+| 10.4.7.22  | hdss7-22.host.com  | etcd | docker |       | node   |
+| 10.4.7.200 | hdss7-200.host.com |      | docker |       | master |
 
 ### 配置hosts文件
 
