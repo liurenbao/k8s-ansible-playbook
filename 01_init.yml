@@ -29,6 +29,12 @@
 #    - name: 设置时区为上海
 #      shell: timedatectl set-timezone Asia/Shanghai
 
+#    - name: 下载ntpdate
+#      shell: yum -y install ntpdate
+
+#    - name: 时间同步
+#      shell: ntpdate -u cn.ntp.org.cn
+
 #    - name: 重启服务器
 #      shell: reboot
 
