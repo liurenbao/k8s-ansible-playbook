@@ -90,3 +90,57 @@ node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 a
 
 ![](https://borinboy.oss-cn-shanghai.aliyuncs.com/huan/20211009221842.png)
 
+
+
+## 其他详解
+
+### keepalived
+
+从节点中check_port.sh文件中：
+
+```
+! Configuration File for keepalived
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 251
+    priority 100
+    advert_int 1
+    mcast_src_ip 10.4.7.11
+    nopreempt
+}
+```
+
+nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主节点恢复正常以后，vip再次回到主节点。
+
+如果因各种原因，导致主节点漂移到从节点，需要手动将vip节点切换到主节点的时候，**需要万分小心！！！**
+
+**恢复主节点操作顺序**
+
+1. 先确认从节点keepalived及nginx存活（如果都挂了当我没说）
+
+2. 启动主节点的nginx
+
+    ```
+    systemctl start nginx
+    ```
+
+3. 多方多人确认，确保7443端口存活
+
+    ```
+    netstat -lntp | grep 7443
+    ```
+
+4. 重启==**主**==节点的keepalived
+
+    ```
+    systemctl restart keepalived
+    ```
+
+5. 重启==**从**==节点的keepalived
+
+    ```
+    systemctl restart keepalived
+    ```
+

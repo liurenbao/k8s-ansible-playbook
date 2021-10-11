@@ -46,3 +46,37 @@
 
 #    - name: 设置开机自启动
 #      shell: systemctl enable nginx && systemctl start nginx
+
+#    - name: 下载keepalived
+#      shell: yum install keepalived -y
+
+#    - name: 编辑keepalived检查端口脚本
+#      copy:
+#        src: ./packages/etc/keepalived/check_port.sh
+#        dest: /etc/keepalived/check_port.sh
+#        mode: 0755
+
+#- hosts: '11'
+#  user: root
+#  tasks:
+#    - name: 编辑keepalived配置文件
+#      copy:
+#        src: packages/etc/keepalived/keepalived.conf_master
+#        dest: /etc/keepalived/keepalived.conf
+#        mode: 0644
+#
+#- hosts: '12'
+#  user: root
+#  tasks:
+#    - name: 编辑keepalived配置文件
+#      copy:
+#        # nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主节点恢复正常以后，vip再次回到主节点
+#        src: packages/etc/keepalived/keepalived.conf_child
+#        dest: /etc/keepalived/keepalived.conf
+#        mode: 0644
+
+#- hosts: proxy
+#  user: root
+#  tasks:
+#    - name: 设置keepalived开机自启动
+#      shell: systemctl enable keepalived && systemctl start keepalived
