@@ -10,6 +10,10 @@ ansible-playbook -i hosts xxx.yml
 
 ## 安装注意事项
 
+如果**不需要**测试将自己打包的镜像推送到harbor中，可以全程一键部署。
+
+
+
 ### 关于playbook
 
 这不是一个优雅的ansible playbook项目，原因如下：
@@ -29,8 +33,6 @@ ansible-playbook -i hosts xxx.yml
 
 ### 关于集群规划
 
-### 集群规划
-
 | IP         | 节点               |  节点  | docker | proxy | etcd |
 | ---------- | ------------------ | :----: | :----: | :---: | :--: |
 | 10.4.7.11  | hdss7-11.host.com  | master |        |   Y   |      |
@@ -39,7 +41,7 @@ ansible-playbook -i hosts xxx.yml
 | 10.4.7.22  | hdss7-22.host.com  |  node  |   Y    |       |  Y   |
 | 10.4.7.200 | hdss7-200.host.com |        |   Y    |       |      |
 
-### 配置hosts文件
+### 关于hosts文件
 
 ```text
 [nodes]
@@ -50,24 +52,20 @@ node04 ansible_ssh_user="root" ansible_ssh_host=10.4.7.22 ansible_ssh_port=22 an
 node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 ansible_ssh_pass="1"
 
 [11]
-node01 ansible_ssh_user="root" ansible_ssh_host=10.4.7.11 ansible_ssh_port=22 ansible_ssh_pass="1"
+node01
 
 [12]
-node02 ansible_ssh_user="root" ansible_ssh_host=10.4.7.12 ansible_ssh_port=22 ansible_ssh_pass="1"
+node02
 
 [21]
-node03 ansible_ssh_user="root" ansible_ssh_host=10.4.7.21 ansible_ssh_port=22 ansible_ssh_pass="1"
+node03
 
 [22]
-node04 ansible_ssh_user="root" ansible_ssh_host=10.4.7.22 ansible_ssh_port=22 ansible_ssh_pass="1"
+node04
 
 [200]
-node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 ansible_ssh_pass="1"
+node05
 
-[docker]
-node03 ansible_ssh_user="root" ansible_ssh_host=10.4.7.21 ansible_ssh_port=22 ansible_ssh_pass="1"
-node04 ansible_ssh_user="root" ansible_ssh_host=10.4.7.22 ansible_ssh_port=22 ansible_ssh_pass="1"
-node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 ansible_ssh_pass="1"
 ```
 
 > 中括号 `[]` 中的内容可以理解为别名，可以在ansible playbook中使用`'11'`来表示是`10.4.7.11`那台主机，使用`nodes`来表示所有主机。
