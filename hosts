@@ -34,6 +34,6 @@ node04
 node03
 node04
 
-[proxy]
+[nginx]
 node01
 node02
