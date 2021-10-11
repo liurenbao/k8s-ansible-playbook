@@ -142,3 +142,18 @@ nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主�
     systemctl restart keepalived
     ```
 
+
+
+### kube-controller-manager
+
+```sh
+#!/bin/sh
+./kube-scheduler \
+  --leader-elect  \
+  --log-dir /data/logs/kubernetes/kube-scheduler \
+  # 这里采用http协议，因此不需要证书，而主控节点应该是一个整体，因此它们也是没有用tls证书的。
+  # 如果主控在不同的机器上，则需要部署证书
+  --master http://127.0.0.1:8080 \
+  --v 2
+```
+
