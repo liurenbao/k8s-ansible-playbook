@@ -1,0 +1,21 @@
+---
+- hosts: '21'
+  user: root
+  tasks:
+    - name: 配置验证集群的yaml文件
+      copy:
+        src: packages/root/nginx-ds.yaml
+        dest: /root/nginx-ds.yaml
+        mode: 0644
+
+    - name: kubectl create -f nginx-ds.yaml
+      shell: kubectl create -f /root/nginx-ds.yaml
+
+    - name: kubectl get pods
+      shell: kubectl get pods
+
+    - name: kubectl get cs
+      shell: kubectl get cs
+
+    - name: kubectl get node
+      shell: kubectl get node
