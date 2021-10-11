@@ -12,7 +12,7 @@ ansible-playbook -i hosts xxx.yml
 
 如果**不需要**测试将自己打包的镜像推送到harbor中，可以全程一键部署。
 
-
+在实践中发现在后期还是有需要用到自建harbor仓库的地方，因此还不能实现一键部署。
 
 ### 关于playbook
 
@@ -72,11 +72,82 @@ node05
 
 
 
+### 关于高版本k8s
+
+在k8s资源清单中，有如下区别：
+
+apiVersion
+
+* 低版本：可以用`apiVersion: extensions/v1beta1`
+* 高版本：需要改成`apiVersion: apps/v1`
+
+selector：
+
+* 低版本：可以不用加
+* 高版本：必须加上`selector`
+
+
+
+#### 新老版本资源清单对比
+
+**老版本**
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: nginx-ds
+spec:
+  template:
+    metadata:
+      labels:
+        app: nginx-ds
+    spec:
+      containers:
+      - name: my-nginx
+        image: harbor.od.com/public/nginx:v1.7.9
+        ports:
+        - containerPort: 80
+```
+
+**新版本**
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-ds
+spec:
+  selector:
+    matchLabels:
+      app: nginx-ds
+  template:
+    metadata:
+      labels:
+        app: nginx-ds
+    spec:
+      containers:
+      - name: my-nginx
+        image: harbor.od.com/public/nginx:v1.7.9
+        ports:
+        - containerPort: 80
+```
+
+
+
 ### 修改宿主机DNS
 
 建议在安装部署好harbor之后，再修改DNS为`10.4.7.11`，然后就可以通过宿主机访问harbor页面。
 
+修改完宿主机的DNS之后，如果由于从公司到家切换网络，可能造成ansible连接被控机器缓慢，或访问网页缓慢，可以尝试在DNS中添加DNS地址：
 
+```
+223.5.5.5
+8.8.8.8
+114.114.114.144
+```
+
+或者可以删除`10.4.7.11`以外的DNS信息并保存之后，马上再重新添加回去，网络即可恢复异常。如还是未能正常，请自行搜索资料排查解决。
 
 ## harbor页面配置
 
@@ -233,3 +304,55 @@ subjects:
     - name: 查看svc
       shell: kubectl get svc
 ```
+
+
+
+## 集群验证
+
+在7-21机器上，使用ansible-playbook命令来执行脚本。
+
+```yaml
+---
+- hosts: '21'
+  user: root
+  tasks:
+    - name: 配置验证集群的yaml文件
+      copy:
+        src: packages/root/nginx-ds.yaml
+        dest: /root/nginx-ds.yaml
+        mode: 0644
+
+    - name: kubectl create -f nginx-ds.yaml
+      shell: kubectl create -f /root/nginx-ds.yaml
+
+    - name: kubectl get pods
+      shell: kubectl get pods
+
+    - name: kubectl get cs
+      shell: kubectl get cs
+
+    - name: kubectl get node
+      shell: kubectl get node
+```
+
+也可以手动执行命令
+
+```
+[root@hdss7-21 ~]# kubectl get pods
+NAME             READY   STATUS              RESTARTS   AGE
+nginx-ds-8m278   0/1     ContainerCreating   0          15m
+
+[root@hdss7-21 ~]# kubectl get cs
+NAME                 STATUS    MESSAGE              ERROR
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-1               Healthy   {"health": "true"}
+etcd-0               Healthy   {"health": "true"}
+etcd-2               Healthy   {"health": "true"}
+
+[root@hdss7-21 ~]# kubectl get node
+NAME                STATUS   ROLES         AGE    VERSION
+hdss7-21.host.com   Ready    master,node   152m   v1.17.2
+hdss7-22.host.com   Ready    master,node   152m   v1.17.2
+```
+
