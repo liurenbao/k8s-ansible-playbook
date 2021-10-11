@@ -33,3 +33,7 @@ node04
 [k8s]
 node03
 node04
+
+[proxy]
+node01
+node02
