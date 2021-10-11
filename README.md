@@ -219,3 +219,17 @@ subjects:
 
 ### LVS调度算法
 网上搜索相关文档
+
+```yaml
+- hosts: kube-proxy
+  user: root
+  tasks:
+    - name: 安装ipvsadm
+      shell: yum install -y ipvsadm
+
+    - name: 使用ipvsadm查看路由
+      shell: ipvsadm -Ln
+      
+    - name: 查看svc
+      shell: kubectl get svc
+```
