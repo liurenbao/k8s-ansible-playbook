@@ -1,5 +1,5 @@
 ---
-- hosts: proxy
+- hosts: nginx
   user: root
   tasks:
 #    - name: 创建src源码包存放目录
@@ -75,7 +75,7 @@
 #        dest: /etc/keepalived/keepalived.conf
 #        mode: 0644
 
-#- hosts: proxy
+#- hosts: nginx
 #  user: root
 #  tasks:
 #    - name: 设置keepalived开机自启动
