@@ -1,0 +1,105 @@
+---
+- hosts: kube-proxy
+  user: root
+  tasks:
+#    - name: 签发kube-proxy证书，证书里的CN也对应着k8s中的一种角色
+#      # 注意system: kube-proxy，system是k8s默认的角色，签发这个证书
+#      # 就可以让k8s中的这个用户拥有system:kube-proxy的角色
+#      copy:
+#        src: packages/opt/certs/kube-proxy-csr.json
+#        dest: /opt/certs/kube-proxy-csr.json
+#        mode: 0644
+#
+#    - name: 生成kube-porxy证书，注意这里 -profile是client，这个和之前client的证书不一样
+#      shell:
+#        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client kube-proxy-csr.json | cfssl-json -bare kube-proxy-client
+#        chdir: /opt/certs
+
+- hosts: kube-proxy
+  user: root
+  tasks:
+#    - name: 分发kube-proxy证书
+#      shell: scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
+
+    - name: kubelet配置节点命令, --server=https://10.4.7.10:7443
+      shell:
+        cmd: kubectl config set-cluster myk8s --certificate-authority=/opt/kubernetes/server/bin/cert/ca.pem --embed-certs=true --server=https://10.4.7.10:7443 --kubeconfig=kube-proxy.kubeconfig
+        chdir: /opt/kubernetes/server/bin/conf
+
+    - name: kubelet配置节点命令, 配置kube-proxy-client-key证书
+      shell:
+        cmd: kubectl config set-credentials kube-proxy --client-certificate=/opt/kubernetes/server/bin/cert/kube-proxy-client.pem --client-key=/opt/kubernetes/server/bin/cert/kube-proxy-client-key.pem --embed-certs=true --kubeconfig=kube-proxy.kubeconfig
+        chdir: /opt/kubernetes/server/bin/conf
+
+    - name: kubelet配置集群
+      shell:
+        cmd:  kubectl config set-context myk8s-context --cluster=myk8s --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
+        chdir: /opt/kubernetes/server/bin/conf
+
+    - name: kubelet配置use-context
+      shell:
+        cmd:  kubectl config use-context myk8s-context --kubeconfig=kube-proxy.kubeconfig
+        chdir: /opt/kubernetes/server/bin/conf
+
+    - name: 配置ipvs.sh
+      copy:
+        src: packages/root/ipvs.sh
+        dest: /root/ipvs.sh
+        mode: 0755
+
+    - name: 执行ipvs.sh
+      shell: /root/ipvs.sh
+
+    - name: 使用 lsmod | grep ip_vs 查看ipvs状态
+      shell: lsmod | grep ip_vs
+
+    - name: 配置kube-proxy.sh
+      copy:
+        src: packages/opt/kubernetes/server/bin/kube-proxy.sh
+        dest: /opt/kubernetes/server/bin/kube-proxy.sh
+        mode: 0755
+
+    - name: 配置kube-proxy.ini
+      copy:
+        src: packages/etc/supervisord.d/kube-proxy.ini
+        dest: /etc/supervisord.d/kube-proxy.ini
+        mode: 0644
+
+    - name: 创建kube-proxy相关目录
+      shell: mkdir -p /data/logs/kubernetes/kube-proxy
+
+- hosts: '21'
+  user: root
+  tasks:
+    - name: 修改kubelet.ini文件
+      lineinfile:
+        dest: /etc/supervisord.d/kube-kubelet.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-proxy-7-21]'
+
+    - name: 修改kubelet.sh脚本
+      lineinfile:
+        dest: /opt/kubernetes/server/bin/kubelet.sh
+        regexp: '^(\s*)--hostname-override'
+        line: '  --hostname-override hdss7-21.host.com \'
+
+- hosts: '22'
+  user: root
+  tasks:
+    - name: 修改kubelet.ini文件
+      lineinfile:
+        dest: /etc/supervisord.d/kube-kubelet.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-proxy-7-22]'
+
+    - name: 修改kubelet.sh脚本
+      lineinfile:
+        dest: /opt/kubernetes/server/bin/kubelet.sh
+        regexp: '^(\s*)--hostname-override'
+        line: '  --hostname-override hdss7-22.host.com \'
+
+- hosts: kube-proxy
+  user: root
+  tasks:
+    - name: supervisorctl update
+      shell: supervisorctl update
