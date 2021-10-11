@@ -157,3 +157,62 @@ nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主�
   --v 2
 ```
 
+
+
+### kubelet
+
+签发证书时，可以将没有的节点添加进`hosts`中，避免以后增加节点时，需要将已存在节点添加到hosts中，然后手撕证书命令，重新签发证书。
+
+```json
+{
+    "CN": "k8s-kubelet",
+    "hosts": [
+    "127.0.0.1",
+    "10.4.7.10",
+    "10.4.7.21",
+    "10.4.7.22",
+    "10.4.7.23",
+     "xxx.xxx.xxx.xxx"
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "CN",
+            "ST": "beijing",
+            "L": "beijing",
+            "O": "od",
+            "OU": "ops"
+        }
+    ]
+}
+```
+
+
+
+### K8S用户体系简介
+
+k8s用户分为普通用户和服务用户，普通用户和server通信的时候会有一个接入点，而这个接入点就是这个"VIP"（10.4.7.10:7443）。
+kubelet不能只找自己的接入点，万一自己的接入点挂了，就没法搞了。
+如果是接入到vip server，kubelet汇报给vip server，vip server再发送给APIserver，告诉apiserver我的状态是什么，和APIserver通信。
+
+### k8s-node.yml
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-node
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:node
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: k8s-node
+```
+* rbac也是一种资源
+* roleRef：集群角色绑定
+  * name: 集群角色叫node
