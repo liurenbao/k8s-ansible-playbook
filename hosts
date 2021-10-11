@@ -37,3 +37,7 @@ node04
 [nginx]
 node01
 node02
+
+[kube-proxy]
+node03
+node04
