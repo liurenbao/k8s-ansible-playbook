@@ -63,11 +63,12 @@
 #      # 我业务容器还没有起来的时候，我们的pod IP已经分配好了，所以我们需要这个pause基础镜像
 #      shell: docker pull kubernetes/pause
 
-#    - name: 将pause基础镜像推送到harbor中
-#      shell: docker tag f9d5de079539 harbor.od.com/public/pause:latest
-#
-#    - name: 将pause基础镜像推送到harbor中
-#      shell: docker push harbor.od.com/public/pause:latest
+#       # 如果需要一键部署，则不需要进行下面的操作
+##    - name: 将pause基础镜像推送到harbor中
+##      shell: docker tag f9d5de079539 harbor.od.com/public/pause:latest
+##
+##    - name: 将pause基础镜像推送到harbor中
+##      shell: docker push harbor.od.com/public/pause:latest
 
 #- hosts: k8s
 #  user: root
