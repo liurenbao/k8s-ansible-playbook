@@ -62,12 +62,12 @@
       shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 
     - name: 安装docker
-      shell: yum install docker -y
+      shell: yum install docker-ce -y
 
     - name: 创建docker相关目录
       shell: mkdir -p /etc/docker /data/docker
 
-    - name: 编辑/etc/docker/daemon.json文件
+    - name: 编辑/etc/docker/daemon.json文件，低版本的docker各种起不来。。。。。。。。
       copy:
         src: ./packages/etc/docker/daemon.json
         dest: /etc/docker/daemon.json
