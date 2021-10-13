@@ -1,109 +1,109 @@
 ---
-#- hosts: k8s
-#  user: root
-#  tasks:
-#    - name: 下载k8s安装包, 版本是1.17.2，我这里是提前下载下来的
-#      copy:
-#        src: ../../Downloads/k8s/kubernetes-server-linux-amd64-v1.17.2.tar.gz
-#        dest: /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz
-#        mode: 0644
-#
-#    - name: 解压k8s安装包
-#      shell:  tar xf /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz -C /opt
-#
-#    - name: 重命名kubernetes
-#      shell: mv /opt/kubernetes /opt/kubernetes-v1.17.2
+- hosts: k8s
+  user: root
+  tasks:
+    - name: 下载k8s安装包, 版本是1.17.2，我这里是提前下载下来的
+      copy:
+        src: ../../Downloads/k8s/kubernetes-server-linux-amd64-v1.17.2.tar.gz
+        dest: /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz
+        mode: 0644
 
-#    - name: 制作kubenetes软链接
-#      shell: ln -s /opt/kubernetes-v1.17.2 /opt/kubernetes
+    - name: 解压k8s安装包
+      shell:  tar xf /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz -C /opt
 
-#    - name: 删除k8s中的源码tar包
-#      shell: rm -rf /opt/kubernetes/kubernetes-src.tar.gz
+    - name: 重命名kubernetes
+      shell: mv /opt/kubernetes /opt/kubernetes-v1.17.2
 
-#    - name: 删除/opt/kubernets/server/bin下面的tar包，是docker的镜像
-#      shell: rm -f /opt/kubernetes/server/bin/*.tar
+    - name: 制作kubenetes软链接
+      shell: ln -s /opt/kubernetes-v1.17.2 /opt/kubernetes
 
-#    - name: 删除/opt/kubernets/server/bin下面的tag包
-#      shell: rm -f /opt/kubernetes/server/bin/*_tag
+    - name: 删除k8s中的源码tar包
+      shell: rm -rf /opt/kubernetes/kubernetes-src.tar.gz
 
-#- hosts: '200'
-#  user: root
-#  tasks:
-#    - name: 创建生成client证书签名的JSON配置文件，/opt/certs/client-csr.json
-#      copy:
-#        src: ./packages/opt/certs/client-csr.json
-#        dest: /opt/certs/client-csr.json
-#        mode: 0644
-#
-#    - name: 生成client证书文件，/opt/certs/client-csr.json
-#      shell:
-#        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client-csr.json | cfssl-json -bare client
-#        chdir: /opt/certs
-#
-#    - name: 给apiserver创建json配置文件
-#      copy:
-#        src: ./packages/opt/certs/apiserver-csr.json
-#        dest: /opt/certs/apiserver-csr.json
-#        mode: 0644
-#
-#    - name: 生成apiserver证书文件，/opt/certs/apiserver-csr.json
-#      shell:
-#        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server apiserver-csr.json | cfssl-json -bare apiserver
-#        chdir: /opt/certs
+    - name: 删除/opt/kubernets/server/bin下面的tar包，是docker的镜像
+      shell: rm -f /opt/kubernetes/server/bin/*.tar
 
-#- hosts: k8s
-#  user: root
-#  tasks:
-#    - name: 在k8s机器上创建cert目录
-#      shell: mkdir /opt/kubernetes/server/bin/cert
-#
-#    - name: 将运维主机上的证书拷贝到k8s节点上
-#      shell: scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/*.pem /opt/kubernetes/server/bin/cert
+    - name: 删除/opt/kubernets/server/bin下面的tag包
+      shell: rm -f /opt/kubernetes/server/bin/*_tag
 
-#    - name: 将etcd证书删除
-#      shell: rm -rf /opt/kubernetes/server/bin/cert/etcd*
+- hosts: '200'
+  user: root
+  tasks:
+    - name: 创建生成client证书签名的JSON配置文件，/opt/certs/client-csr.json
+      copy:
+        src: ./packages/opt/certs/client-csr.json
+        dest: /opt/certs/client-csr.json
+        mode: 0644
 
-#    - name: 在k8s机器上安装conf文件
-#      shell: mkdir /opt/kubernetes/server/bin/conf
-#
-#    - name: 编辑k8s机器上的audit.yaml文件，这是k8s配置清单，用来做审计用的
-#      copy:
-#        src: packages/opt/kubernetes/server/bin/conf/audit.yaml
-#        dest: /opt/kubernetes/server/bin/conf/audit.yaml
-#        mode: 0644
+    - name: 生成client证书文件，/opt/certs/client-csr.json
+      shell:
+        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client-csr.json | cfssl-json -bare client
+        chdir: /opt/certs
 
-#    - name: 编辑apiserver启动脚本
-#      copy:
-#        src: packages/opt/kubernetes/server/bin/kube-apiserver.sh
-#        dest: /opt/kubernetes/server/bin/kube-apiserver.sh
-#        mode: 0755
-#
-#    - name: 创建apiserver ini配置文件
-#      copy:
-#        src: packages/etc/supervisord.d/kube-apiserver.ini
-#        dest: /etc/supervisord.d/kube-apiserver.ini
-#        mode: 0644
-#
-#    - name: 创建apiserver相关目录
-#      shell: mkdir -p /data/logs/kubernetes/kube-apiserver
+    - name: 给apiserver创建json配置文件
+      copy:
+        src: ./packages/opt/certs/apiserver-csr.json
+        dest: /opt/certs/apiserver-csr.json
+        mode: 0644
 
-#- hosts: '21'
-#  user: root
-#  tasks:
-#    - name: 编辑ini配置文件，和主机IP地址保持一致
-#      lineinfile:
-#        dest: /etc/supervisord.d/kube-apiserver.ini
-#        regexp: '^[\[]program'
-#        line: '[program:kube-apiserver-7-21]'
-#
-#- hosts: '22'
-#  user: root
-#  tasks:
-#    - name: 编辑ini配置文件，和主机IP地址保持一致
-#      lineinfile:
-#        dest: /etc/supervisord.d/kube-apiserver.ini
-#        regexp: '^[\[]program'
-#        line: '[program:kube-apiserver-7-22]'
+    - name: 生成apiserver证书文件，/opt/certs/apiserver-csr.json
+      shell:
+        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server apiserver-csr.json | cfssl-json -bare apiserver
+        chdir: /opt/certs
+
+- hosts: k8s
+  user: root
+  tasks:
+    - name: 在k8s机器上创建cert目录
+      shell: mkdir /opt/kubernetes/server/bin/cert
+
+    - name: 将运维主机上的证书拷贝到k8s节点上
+      shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@10.4.7.200:/opt/certs/*.pem /opt/kubernetes/server/bin/cert
+
+    - name: 将etcd证书删除
+      shell: rm -rf /opt/kubernetes/server/bin/cert/etcd*
+
+    - name: 在k8s机器上安装conf文件
+      shell: mkdir /opt/kubernetes/server/bin/conf
+
+    - name: 编辑k8s机器上的audit.yaml文件，这是k8s配置清单，用来做审计用的
+      copy:
+        src: packages/opt/kubernetes/server/bin/conf/audit.yaml
+        dest: /opt/kubernetes/server/bin/conf/audit.yaml
+        mode: 0644
+
+    - name: 编辑apiserver启动脚本
+      copy:
+        src: packages/opt/kubernetes/server/bin/kube-apiserver.sh
+        dest: /opt/kubernetes/server/bin/kube-apiserver.sh
+        mode: 0755
+
+    - name: 创建apiserver ini配置文件
+      copy:
+        src: packages/etc/supervisord.d/kube-apiserver.ini
+        dest: /etc/supervisord.d/kube-apiserver.ini
+        mode: 0644
+
+    - name: 创建apiserver相关目录
+      shell: mkdir -p /data/logs/kubernetes/kube-apiserver
+
+- hosts: '21'
+  user: root
+  tasks:
+    - name: 编辑ini配置文件，和主机IP地址保持一致
+      lineinfile:
+        dest: /etc/supervisord.d/kube-apiserver.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-apiserver-7-21]'
+
+- hosts: '22'
+  user: root
+  tasks:
+    - name: 编辑ini配置文件，和主机IP地址保持一致
+      lineinfile:
+        dest: /etc/supervisord.d/kube-apiserver.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-apiserver-7-22]'
 
 - hosts: k8s
   user: root
