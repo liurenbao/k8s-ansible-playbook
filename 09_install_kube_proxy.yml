@@ -1,25 +1,29 @@
 ---
-- hosts: kube-proxy
+- hosts: '200'
   user: root
   tasks:
-#    - name: 签发kube-proxy证书，证书里的CN也对应着k8s中的一种角色
-#      # 注意system: kube-proxy，system是k8s默认的角色，签发这个证书
-#      # 就可以让k8s中的这个用户拥有system:kube-proxy的角色
-#      copy:
-#        src: packages/opt/certs/kube-proxy-csr.json
-#        dest: /opt/certs/kube-proxy-csr.json
-#        mode: 0644
-#
-#    - name: 生成kube-porxy证书，注意这里 -profile是client，这个和之前client的证书不一样
-#      shell:
-#        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client kube-proxy-csr.json | cfssl-json -bare kube-proxy-client
-#        chdir: /opt/certs
+    - name: 签发kube-proxy证书，证书里的CN也对应着k8s中的一种角色
+      # 注意system: kube-proxy，system是k8s默认的角色，签发这个证书
+      # 就可以让k8s中的这个用户拥有system:kube-proxy的角色
+      copy:
+        src: packages/opt/certs/kube-proxy-csr.json
+        dest: /opt/certs/kube-proxy-csr.json
+        mode: 0644
+
+    - name: 生成kube-porxy证书，注意这里 -profile是client，这个和之前client的证书不一样
+      shell:
+        cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client kube-proxy-csr.json | cfssl-json -bare kube-proxy-client
+        chdir: /opt/certs
 
 - hosts: kube-proxy
   user: root
   tasks:
-#    - name: 分发kube-proxy证书
-#      shell: scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
+    - name: 下载sshpass
+      shell: yum install -y sshpass
+      ignore_errors: yes
+
+    - name: 分发kube-proxy证书
+      shell: sshpass -p '1' scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
 
     - name: kubelet配置节点命令, --server=https://10.4.7.10:7443
       shell:
@@ -71,32 +75,20 @@
 - hosts: '21'
   user: root
   tasks:
-    - name: 修改kubelet.ini文件
+    - name: 修改kube-proxy.ini文件
       lineinfile:
-        dest: /etc/supervisord.d/kube-kubelet.ini
+        dest: /etc/supervisord.d/kube-proxy.ini
         regexp: '^[\[]program'
         line: '[program:kube-proxy-7-21]'
-
-    - name: 修改kubelet.sh脚本
-      lineinfile:
-        dest: /opt/kubernetes/server/bin/kubelet.sh
-        regexp: '^(\s*)--hostname-override'
-        line: '  --hostname-override hdss7-21.host.com \'
 
 - hosts: '22'
   user: root
   tasks:
-    - name: 修改kubelet.ini文件
+    - name: 修改kube-proxy.ini文件
       lineinfile:
-        dest: /etc/supervisord.d/kube-kubelet.ini
+        dest: /etc/supervisord.d/kube-proxy.ini
         regexp: '^[\[]program'
         line: '[program:kube-proxy-7-22]'
-
-    - name: 修改kubelet.sh脚本
-      lineinfile:
-        dest: /opt/kubernetes/server/bin/kubelet.sh
-        regexp: '^(\s*)--hostname-override'
-        line: '  --hostname-override hdss7-22.host.com \'
 
 - hosts: kube-proxy
   user: root
