@@ -1,71 +1,71 @@
 ---
-#- hosts: k8s
-#  user: root
-#  tasks:
-#    - name: 创建kube-controller-manager.sh脚本
-#      copy:
-#        src: packages/opt/kubernetes/server/bin/kube-controller-manager.sh
-#        dest: /opt/kubernetes/server/bin/kube-controller-manager.sh
-#        mode: 0755
-#
-#    - name: 创建kube-controller-manager相关目录
-#      shell: mkdir -p /data/logs/kubernetes/kube-controller-manager
-#
-#    - name: 创建kube-conntroller-manager.ini文件
-#      copy:
-#        src: packages/etc/supervisord.d/kube-conntroller-manager.ini
-#        dest: /etc/supervisord.d/kube-conntroller-manager.ini
-#
-#    - name: 创建kube-scheduler.sh脚本
-#      copy:
-#        src: packages/opt/kubernetes/server/bin/kube-scheduler.sh
-#        dest: /opt/kubernetes/server/bin/kube-scheduler.sh
-#        mode: 0755
-#
-#    - name: 创建schedule相关目录
-#      shell: mkdir -p /data/logs/kubernetes/kube-scheduler
-#
-#    - name: 创建kube-schedule.ini配置文件
-#      copy:
-#        src: packages/etc/supervisord.d/kube-scheduler.ini
-#        dest: /etc/supervisord.d/kube-scheduler.ini
-#        mode: 0644
-#
-#- hosts: '21'
-#  user: root
-#  tasks:
-#    - name: 编辑kube-conntroller-manager.ini配置文件，和主机IP地址保持一致
-#      lineinfile:
-#        dest: /etc/supervisord.d/kube-conntroller-manager.ini
-#        regexp: '^[\[]program'
-#        line: '[program:kube-controller-manager-7-21]'
-#
-#    - name: 编辑ini配置文件，和主机IP地址保持一致
-#      lineinfile:
-#        dest: /etc/supervisord.d/kube-scheduler.ini
-#        regexp: '^[\[]program'
-#        line: '[program:kube-scheduler-7-21]'
-#
-#- hosts: '22'
-#  user: root
-#  tasks:
-#    - name: 编辑ini配置文件，和主机IP地址保持一致
-#      lineinfile:
-#        dest: /etc/supervisord.d/kube-conntroller-manager.ini
-#        regexp: '^[\[]program'
-#        line: '[program:kube-controller-manager-7-22]'
-#
-#    - name: 编辑ini配置文件，和主机IP地址保持一致
-#      lineinfile:
-#        dest: /etc/supervisord.d/kube-scheduler.ini
-#        regexp: '^[\[]program'
-#        line: '[program:kube-scheduler-7-22]'
-#
 - hosts: k8s
   user: root
   tasks:
-#    - name: 检查supervisor配置
-#      shell: supervisorctl update
+    - name: 创建kube-controller-manager.sh脚本
+      copy:
+        src: packages/opt/kubernetes/server/bin/kube-controller-manager.sh
+        dest: /opt/kubernetes/server/bin/kube-controller-manager.sh
+        mode: 0755
+
+    - name: 创建kube-controller-manager相关目录
+      shell: mkdir -p /data/logs/kubernetes/kube-controller-manager
+
+    - name: 创建kube-conntroller-manager.ini文件
+      copy:
+        src: packages/etc/supervisord.d/kube-conntroller-manager.ini
+        dest: /etc/supervisord.d/kube-conntroller-manager.ini
+
+    - name: 创建kube-scheduler.sh脚本
+      copy:
+        src: packages/opt/kubernetes/server/bin/kube-scheduler.sh
+        dest: /opt/kubernetes/server/bin/kube-scheduler.sh
+        mode: 0755
+
+    - name: 创建schedule相关目录
+      shell: mkdir -p /data/logs/kubernetes/kube-scheduler
+
+    - name: 创建kube-schedule.ini配置文件
+      copy:
+        src: packages/etc/supervisord.d/kube-scheduler.ini
+        dest: /etc/supervisord.d/kube-scheduler.ini
+        mode: 0644
+
+- hosts: '21'
+  user: root
+  tasks:
+    - name: 编辑kube-conntroller-manager.ini配置文件，和主机IP地址保持一致
+      lineinfile:
+        dest: /etc/supervisord.d/kube-conntroller-manager.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-controller-manager-7-21]'
+
+    - name: 编辑ini配置文件，和主机IP地址保持一致
+      lineinfile:
+        dest: /etc/supervisord.d/kube-scheduler.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-scheduler-7-21]'
+
+- hosts: '22'
+  user: root
+  tasks:
+    - name: 编辑ini配置文件，和主机IP地址保持一致
+      lineinfile:
+        dest: /etc/supervisord.d/kube-conntroller-manager.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-controller-manager-7-22]'
+
+    - name: 编辑ini配置文件，和主机IP地址保持一致
+      lineinfile:
+        dest: /etc/supervisord.d/kube-scheduler.ini
+        regexp: '^[\[]program'
+        line: '[program:kube-scheduler-7-22]'
+
+- hosts: k8s
+  user: root
+  tasks:
+    - name: 检查supervisor配置
+      shell: supervisorctl update
 
     - name: 设置kubectl软链接
       shell: ln -s /opt/kubernetes/server/bin/kubectl /usr/bin/kubectl
