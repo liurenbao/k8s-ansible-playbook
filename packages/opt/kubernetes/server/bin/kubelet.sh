@@ -15,5 +15,5 @@
   --image-gc-low-threshold 10 \
   --kubeconfig ./conf/kubelet.kubeconfig \
   --log-dir /data/logs/kubernetes/kube-kubelet \
-  --pod-infra-container-image harbor.od.com/public/pause:latest \
+  --pod-infra-container-image docker.io/library/pause:latest \
   --root-dir /data/kubelet
