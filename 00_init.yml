@@ -41,15 +41,6 @@
     - name: install tools
       shell: yum install wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
 
-    - name: 修改DNS为7.11
-      lineinfile:
-        dest: /etc/sysconfig/network-scripts/ifcfg-eth0
-        regexp: '^DNS1='
-        line: 'DNS1=10.4.7.11'
-
-    - name: 重启网卡
-      shell: systemctl restart network
-
 - hosts: '200'
   user: root
   tasks:
