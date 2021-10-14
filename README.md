@@ -1,10 +1,21 @@
 Docker与K8S学习笔记。
 
 ## 运行命令
+
+### 手动部署
+
 ```bash
 ansible-playbook -i hosts xxx.yml
 ```
 其中xxx是需要执行的yml文件名。
+
+#### 一键部署脚本
+
+进入到k8s项目目录下，执行命令
+
+```
+sh install.sh
+```
 
 
 
@@ -22,15 +33,9 @@ ansible-playbook -i hosts xxx.yml
 
 关于一键部署的问题，在昨晚回家之后突发奇想，如果我们不用自建harbor仓库的镜像，而是用官方镜像（`docker.io/kubernetes/pause:latest`），是不是就可实现一键部署？
 
-#### 一键部署脚本
+### 关于安装包
 
-进入到k8s项目目录下，执行命令
-
-```
-sh install.sh
-```
-
-
+由于某种不可描述的原因，下载某些包无法下载，因此需要手动下载到指定目录。
 
 ### 关于playbook
 
