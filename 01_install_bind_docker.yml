@@ -38,7 +38,7 @@
     - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
       shell: named-checkconf
 
-- hosts:
+- hosts: nodes
   user: root
   tasks:
     - name: 修改DNS为7.11
