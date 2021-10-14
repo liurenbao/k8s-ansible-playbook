@@ -30,9 +30,9 @@
         cmd: make && make install
         chdir: /opt/nginx-1.20.1
 
-      - name: 制作软链接
-        shell: ln -s /usr/local/sbin/nginx /usr/bin/nginx
-        ignore_errors: yes
+    - name: 制作软链接
+      shell: ln -s /usr/local/sbin/nginx /usr/bin/nginx
+      ignore_errors: yes
 
     - name: 将nginx添加到系统自启动服务中
       copy:

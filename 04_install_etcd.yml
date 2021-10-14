@@ -22,6 +22,7 @@
 
     - name: 添加etcd用户
       shell: useradd -s /sbin/nologin -M etcd
+      ignore_errors: yes
 
     - name: 下载etcd
       copy:

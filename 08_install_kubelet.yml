@@ -40,6 +40,9 @@
         cmd: kubectl config use-context myk8s-context --kubeconfig=kubelet.kubeconfig
         chdir: /opt/kubernetes/server/bin/conf
 
+- hosts: '21'
+  user: root
+  tasks:
     - name: 配置k8s-node.yml文件
       copy:
         src: packages/opt/kubernetes/server/bin/conf/k8s-node.yaml
@@ -123,6 +126,9 @@
   tasks:
     - name: supervisorctl update
       shell: supervisorctl update
+
+    - name: 等待supervisor启动，需要等待20秒左右
+      pause: seconds=20
 
 - hosts: '21'
   user: root
