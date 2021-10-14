@@ -14,7 +14,7 @@
     - name: copy packages/etc/named.rfc1912.zones
       copy:
         src: packages/etc/named.rfc1912.zones
-        dest: /etc/named/named.rfc1912.zones
+        dest: /etc/named.rfc1912.zones
         mode: 0644
 
     - name: copy /var/named/host.com.zone file
