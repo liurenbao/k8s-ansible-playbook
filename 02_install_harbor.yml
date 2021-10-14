@@ -2,13 +2,13 @@
 - hosts: '200'
   user: root
   tasks:
-    - name: 下载harbor，有可能下载失败，如果下载失败，手动下载源码包到packages/src目录下
-      shell:
-        cmd: wget https://github.com/goharbor/harbor/releases/download/v2.2.2/harbor-offline-installer-v2.2.2.tgz
-        chdir: /opt
+#    - name: 下载harbor，有可能下载失败，如果下载失败，手动下载源码包到packages/src目录下
+#      shell:
+#        cmd: wget https://github.com/goharbor/harbor/releases/download/v2.2.2/harbor-offline-installer-v2.2.2.tgz
+#        chdir: /opt
 
-##    - name: 下载harbor
-##      copy: src=./packages/src/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
+    - name: 下载harbor
+      copy: src=./packages/src/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
 
     - name: 解压
       shell: tar xf /opt/harbor-offline-installer-v2.2.2.tgz -C /opt/
@@ -56,12 +56,3 @@
 
     - name: 重启named
       shell: systemctl restart named
-
-    - name: harbor已部署完成，请手动设置DNS并访问harbor.od.com页面，配置public等信息
-      shell: ls
-
-    - name: harbor已部署完成，请手动设置DNS并访问harbor.od.com页面，配置public等信息
-      shell: ls
-
-    - name: harbor已部署完成，请手动设置DNS并访问harbor.od.com页面，配置public等信息
-      shell: ls

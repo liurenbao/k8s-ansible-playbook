@@ -67,6 +67,9 @@
     - name: 检查supervisor配置
       shell: supervisorctl update
 
+    - name: 等待supervisor启动，需要等待20秒左右
+      pause: seconds=20
+
     - name: 设置kubectl软链接
       shell: ln -s /opt/kubernetes/server/bin/kubectl /usr/bin/kubectl
 

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: my-nginx
-#        image: harbor.od.com/public/nginx:v1.7.9
-        image: docker.io/kubernetes/pause:latest
+        image: docker.io/library/nginx:1.7.9
+#        image: harbor.od.com/nginx:latest
         ports:
         - containerPort: 80

@@ -95,3 +95,6 @@
   tasks:
     - name: supervisorctl update
       shell: supervisorctl update
+
+    - name: 等待supervisor启动，需要等待20秒左右
+      pause: seconds=20
