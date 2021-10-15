@@ -19,7 +19,7 @@
 
     - name: disable selinux
       copy:
-        src: packages/etc/selinux/config
+        src: ../packages/etc/selinux/config
         dest: /etc/selinux/config
         mode: 0644
 
@@ -55,19 +55,19 @@
 ##      shell: wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -O /usr/bin/cfssl-certinfo
 
     - name: 安装cfssl证书
-      copy: src=./packages/usr/bin/cfssl_linux-amd64 dest=/usr/bin/cfssl mode=0755
+      copy: src=../packages/usr/bin/cfssl_linux-amd64 dest=/usr/bin/cfssl mode=0755
 
     - name: 安装cfssl证书
-      copy: src=./packages/usr/bin/cfssljson_linux-amd64 dest=/usr/bin/cfssl-json mode=0755
+      copy: src=../packages/usr/bin/cfssljson_linux-amd64 dest=/usr/bin/cfssl-json mode=0755
 
     - name: 安装cfssl证书
-      copy: src=./packages/usr/bin/cfssl-certinfo_linux-amd64 dest=/usr/bin/cfssl-certinfo mode=0755
+      copy: src=../packages/usr/bin/cfssl-certinfo_linux-amd64 dest=/usr/bin/cfssl-certinfo mode=0755
 
     - name: 创建certs目录
       shell: mkdir -p /opt/certs
 
     - name: 手撕ca-csr.json文件
-      copy: src=./packages/opt/certs/ca-csr.json dest=/opt/certs/ca-csr.json mode=0644
+      copy: src=../packages/opt/certs/ca-csr.json dest=/opt/certs/ca-csr.json mode=0644
 
     - name: 手撕证书命令
       shell:

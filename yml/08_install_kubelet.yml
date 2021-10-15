@@ -4,7 +4,7 @@
   tasks:
     - name: 上传kubelet-csr.json
       copy:
-        src: packages/opt/certs/kubelet-csr.json
+        src: ../packages/opt/certs/kubelet-csr.json
         dest: /opt/certs/kubelet-csr.json
         mode: 0644
 
@@ -45,7 +45,7 @@
   tasks:
     - name: 配置k8s-node.yml文件
       copy:
-        src: packages/opt/kubernetes/server/bin/conf/k8s-node.yaml
+        src: ../packages/opt/kubernetes/server/bin/conf/k8s-node.yaml
         dest: /opt/kubernetes/server/bin/conf/k8s-node.yaml
         mode: 0644
 
@@ -78,13 +78,13 @@
   tasks:
     - name: 创建kebulet.sh文件
       copy:
-        src: packages/opt/kubernetes/server/bin/kubelet.sh
+        src: ../packages/opt/kubernetes/server/bin/kubelet.sh
         dest: /opt/kubernetes/server/bin/kubelet.sh
         mode: 0755
 
     - name: 创建kubelet.ini配置文件
       copy:
-        src: packages/etc/supervisord.d/kube-kubelet.ini
+        src: ../packages/etc/supervisord.d/kube-kubelet.ini
         dest: /etc/supervisord.d/kube-kubelet.ini
         mode: 0644
 

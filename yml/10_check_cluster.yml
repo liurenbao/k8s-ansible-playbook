@@ -4,7 +4,7 @@
   tasks:
     - name: 配置验证集群的yaml文件
       copy:
-        src: packages/root/nginx-ds.yaml
+        src: ../packages/root/nginx-ds.yaml
         dest: /root/nginx-ds.yaml
         mode: 0644
 

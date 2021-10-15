@@ -4,7 +4,7 @@
   tasks:
     - name: 下载k8s安装包, 版本是1.17.2，我这里是提前下载下来的
       copy:
-        src: ../../Downloads/k8s/kubernetes-server-linux-amd64-v1.17.2.tar.gz
+        src: ../../../Downloads/k8s/kubernetes-server-linux-amd64-v1.17.2.tar.gz
         dest: /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz
         mode: 0644
 
@@ -31,7 +31,7 @@
   tasks:
     - name: 创建生成client证书签名的JSON配置文件，/opt/certs/client-csr.json
       copy:
-        src: ./packages/opt/certs/client-csr.json
+        src: ../packages/opt/certs/client-csr.json
         dest: /opt/certs/client-csr.json
         mode: 0644
 
@@ -42,7 +42,7 @@
 
     - name: 给apiserver创建json配置文件
       copy:
-        src: ./packages/opt/certs/apiserver-csr.json
+        src: ../packages/opt/certs/apiserver-csr.json
         dest: /opt/certs/apiserver-csr.json
         mode: 0644
 
@@ -68,19 +68,19 @@
 
     - name: 编辑k8s机器上的audit.yaml文件，这是k8s配置清单，用来做审计用的
       copy:
-        src: packages/opt/kubernetes/server/bin/conf/audit.yaml
+        src: ../packages/opt/kubernetes/server/bin/conf/audit.yaml
         dest: /opt/kubernetes/server/bin/conf/audit.yaml
         mode: 0644
 
     - name: 编辑apiserver启动脚本
       copy:
-        src: packages/opt/kubernetes/server/bin/kube-apiserver.sh
+        src: ../packages/opt/kubernetes/server/bin/kube-apiserver.sh
         dest: /opt/kubernetes/server/bin/kube-apiserver.sh
         mode: 0755
 
     - name: 创建apiserver ini配置文件
       copy:
-        src: packages/etc/supervisord.d/kube-apiserver.ini
+        src: ../packages/etc/supervisord.d/kube-apiserver.ini
         dest: /etc/supervisord.d/kube-apiserver.ini
         mode: 0644
 

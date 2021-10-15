@@ -4,7 +4,7 @@
   tasks:
     - name: 创建kube-controller-manager.sh脚本
       copy:
-        src: packages/opt/kubernetes/server/bin/kube-controller-manager.sh
+        src: ../packages/opt/kubernetes/server/bin/kube-controller-manager.sh
         dest: /opt/kubernetes/server/bin/kube-controller-manager.sh
         mode: 0755
 
@@ -13,12 +13,12 @@
 
     - name: 创建kube-conntroller-manager.ini文件
       copy:
-        src: packages/etc/supervisord.d/kube-conntroller-manager.ini
+        src: ../packages/etc/supervisord.d/kube-conntroller-manager.ini
         dest: /etc/supervisord.d/kube-conntroller-manager.ini
 
     - name: 创建kube-scheduler.sh脚本
       copy:
-        src: packages/opt/kubernetes/server/bin/kube-scheduler.sh
+        src: ../packages/opt/kubernetes/server/bin/kube-scheduler.sh
         dest: /opt/kubernetes/server/bin/kube-scheduler.sh
         mode: 0755
 
@@ -27,7 +27,7 @@
 
     - name: 创建kube-schedule.ini配置文件
       copy:
-        src: packages/etc/supervisord.d/kube-scheduler.ini
+        src: ../packages/etc/supervisord.d/kube-scheduler.ini
         dest: /etc/supervisord.d/kube-scheduler.ini
         mode: 0644
 
