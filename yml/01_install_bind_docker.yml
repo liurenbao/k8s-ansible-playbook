@@ -5,27 +5,27 @@
     - name: install bind, 用来自建DNS
       shell: yum install bind -y
 
-    - name: copy packages/etc/named.conf
+    - name: copy ../packages/etc/named.conf
       copy:
-        src: packages/etc/named.conf
+        src: ../packages/etc/named.conf
         dest: /etc/named.conf
         mode: 0644
 
-    - name: copy packages/etc/named.rfc1912.zones
+    - name: copy ../packages/etc/named.rfc1912.zones
       copy:
-        src: packages/etc/named.rfc1912.zones
+        src: ../packages/etc/named.rfc1912.zones
         dest: /etc/named.rfc1912.zones
         mode: 0644
 
     - name: copy /var/named/host.com.zone file
       copy:
-        src: ./packages/var/named/host.com.zone
+        src: ../packages/var/named/host.com.zone
         dest: /var/named/host.com.zone
         mode: 0644
 
     - name: copy /var/named/od.com.zone file
       copy:
-        src: ./packages/var/named/od.com.zone
+        src: ../packages/var/named/od.com.zone
         dest: /var/named/od.com.zone
         mode: 0644
 
@@ -87,7 +87,7 @@
 
     - name: 编辑/etc/docker/daemon.json文件，低版本的docker各种起不来。。。。。。。。
       copy:
-        src: ./packages/etc/docker/daemon.json
+        src: ../packages/etc/docker/daemon.json
         dest: /etc/docker/daemon.json
         mode: 0644
 

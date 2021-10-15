@@ -4,10 +4,10 @@
   tasks:
       # ca-config证书中，peer表示互相通信,服务端和客户端找对方通信都需要证书
     - name: 创建基于根证书的ca-config文件，因为etcd也是需要通过ssl通信的
-      copy: src=./packages/opt/certs/ca-config.json dest=/opt/certs/ca-config.json mode=0644
+      copy: src=../packages/opt/certs/ca-config.json dest=/opt/certs/ca-config.json mode=0644
 
     - name: 创建基于根证书的etcd-peer-csr文件
-      copy: src=./packages/opt/certs/etcd-peer-csr.json dest=/opt/certs/etcd-peer-csr.json mode=0644
+      copy: src=../packages/opt/certs/etcd-peer-csr.json dest=/opt/certs/etcd-peer-csr.json mode=0644
 
     - name: 生成证书文件
       shell:
@@ -26,7 +26,7 @@
 
     - name: 下载etcd
       copy:
-        src: ./packages/src/etcd-v3.1.20-linux-amd64.tar.gz
+        src: ../packages/src/etcd-v3.1.20-linux-amd64.tar.gz
         dest: /opt/src/etcd-v3.1.20-linux-amd64.tar.gz
         mode: 0644
 
@@ -76,7 +76,7 @@
 
     - name: 创建etcd启动脚本
       copy:
-        src: ./packages/opt/etcd/etcd-server-startup.sh
+        src: ../packages/opt/etcd/etcd-server-startup.sh
         dest: /opt/etcd/etcd-server-startup.sh
         mode: 0755
 
@@ -94,7 +94,7 @@
 
     - name: 创建etcd-server的启动配置
       copy:
-        src: ./packages/etc/supervisord.d/etcd-server.ini
+        src: ../packages/etc/supervisord.d/etcd-server.ini
         dest: /etc/supervisord.d/etcd-server.ini
         mode: 0644
 

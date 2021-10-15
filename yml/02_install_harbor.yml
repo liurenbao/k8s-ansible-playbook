@@ -8,7 +8,7 @@
 #        chdir: /opt
 
     - name: 下载harbor
-      copy: src=./packages/src/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
+      copy: src=../packages/src/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
 
     - name: 解压
       shell: tar xf /opt/harbor-offline-installer-v2.2.2.tgz -C /opt/
@@ -23,7 +23,7 @@
 
     - name: 复制harbor.yml
       copy:
-        src: packages/opt/harbor/harbor.yml
+        src: ../packages/opt/harbor/harbor.yml
         dest: /opt/harbor/harbor.yml
         mode: 0644
 
@@ -40,7 +40,7 @@
       shell: yum install nginx -y
 
     - name: 设置nginx代理
-      copy: src=./packages/etc/nginx/conf.d/harbor.od.com.conf dest=/etc/nginx/conf.d/harbor.od.com.conf mode=0644
+      copy: src=../packages/etc/nginx/conf.d/harbor.od.com.conf dest=/etc/nginx/conf.d/harbor.od.com.conf mode=0644
 
     - name: 启动nginx并设置开机自启
       shell: systemctl start nginx && systemctl enable nginx

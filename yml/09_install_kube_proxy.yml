@@ -6,7 +6,7 @@
       # 注意system: kube-proxy，system是k8s默认的角色，签发这个证书
       # 就可以让k8s中的这个用户拥有system:kube-proxy的角色
       copy:
-        src: packages/opt/certs/kube-proxy-csr.json
+        src: ../packages/opt/certs/kube-proxy-csr.json
         dest: /opt/certs/kube-proxy-csr.json
         mode: 0644
 
@@ -47,7 +47,7 @@
 
     - name: 配置ipvs.sh
       copy:
-        src: packages/root/ipvs.sh
+        src: ../packages/root/ipvs.sh
         dest: /root/ipvs.sh
         mode: 0755
 
@@ -59,13 +59,13 @@
 
     - name: 配置kube-proxy.sh
       copy:
-        src: packages/opt/kubernetes/server/bin/kube-proxy.sh
+        src: ../packages/opt/kubernetes/server/bin/kube-proxy.sh
         dest: /opt/kubernetes/server/bin/kube-proxy.sh
         mode: 0755
 
     - name: 配置kube-proxy.ini
       copy:
-        src: packages/etc/supervisord.d/kube-proxy.ini
+        src: ../packages/etc/supervisord.d/kube-proxy.ini
         dest: /etc/supervisord.d/kube-proxy.ini
         mode: 0644
 
@@ -98,3 +98,9 @@
 
     - name: 等待supervisor启动，需要等待20秒左右
       pause: seconds=20
+
+- hosts: '11'
+  user: root
+  tasks:
+    - name: 重启11机器网卡
+      shell: systemctl restart network
