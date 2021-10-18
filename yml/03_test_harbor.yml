@@ -1,5 +1,6 @@
 ---
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
     - name: 拉取nginx镜像

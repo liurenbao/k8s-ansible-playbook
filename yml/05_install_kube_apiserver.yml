@@ -1,5 +1,6 @@
 ---
 - hosts: k8s
+  gather_facts: no
   user: root
   tasks:
     - name: 下载k8s安装包, 版本是1.17.2，我这里是提前下载下来的
@@ -27,6 +28,7 @@
       shell: rm -f /opt/kubernetes/server/bin/*_tag
 
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
     - name: 创建生成client证书签名的JSON配置文件，/opt/certs/client-csr.json
@@ -52,6 +54,7 @@
         chdir: /opt/certs
 
 - hosts: k8s
+  gather_facts: no
   user: root
   tasks:
     - name: 在k8s机器上创建cert目录
@@ -88,6 +91,7 @@
       shell: mkdir -p /data/logs/kubernetes/kube-apiserver
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: 编辑ini配置文件，和主机IP地址保持一致
@@ -97,6 +101,7 @@
         line: '[program:kube-apiserver-7-21]'
 
 - hosts: '22'
+  gather_facts: no
   user: root
   tasks:
     - name: 编辑ini配置文件，和主机IP地址保持一致
@@ -106,10 +111,11 @@
         line: '[program:kube-apiserver-7-22]'
 
 - hosts: k8s
+  gather_facts: no
   user: root
   tasks:
-    - name: 更新supervisorctl
+    - name: 使用supervisorctl启动API server
       shell: supervisorctl update
 
-    - name: 等待supervisor启动，需要等待20秒左右
-      pause: seconds=20
+#    - name: 等待supervisor启动，需要等待20秒左右
+#      pause: seconds=20
