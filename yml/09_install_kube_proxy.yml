@@ -1,5 +1,6 @@
 ---
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
     - name: 签发kube-proxy证书，证书里的CN也对应着k8s中的一种角色
@@ -16,6 +17,7 @@
         chdir: /opt/certs
 
 - hosts: kube-proxy
+  gather_facts: no
   user: root
   tasks:
     - name: 下载sshpass
@@ -73,6 +75,7 @@
       shell: mkdir -p /data/logs/kubernetes/kube-proxy
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改kube-proxy.ini文件
@@ -82,6 +85,7 @@
         line: '[program:kube-proxy-7-21]'
 
 - hosts: '22'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改kube-proxy.ini文件
@@ -91,15 +95,17 @@
         line: '[program:kube-proxy-7-22]'
 
 - hosts: kube-proxy
+  gather_facts: no
   user: root
   tasks:
-    - name: supervisorctl update
+    - name: 使用supervisorctl启动kube-porxy服务
       shell: supervisorctl update
 
-    - name: 等待supervisor启动，需要等待20秒左右
-      pause: seconds=20
+#    - name: 等待supervisor启动，需要等待20秒左右
+#      pause: seconds=20
 
 - hosts: '11'
+  gather_facts: no
   user: root
   tasks:
     - name: 重启11机器网卡

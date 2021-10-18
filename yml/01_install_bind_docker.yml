@@ -1,5 +1,6 @@
 ---
 - hosts: '11'
+  gather_facts: no
   user: root
   tasks:
     - name: install bind, 用来自建DNS
@@ -39,6 +40,7 @@
       shell: named-checkconf
 
 - hosts: nodes
+  gather_facts: no
   user: root
   tasks:
     - name: 修改DNS为7.11
@@ -70,6 +72,7 @@
 ##        "
 
 - hosts: docker
+  gather_facts: no
   user: root
   tasks:
 ##      可能会因为网络原因下载安装失败，不推荐使用
@@ -92,6 +95,7 @@
         mode: 0644
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改'21'主机daemon.json中的bip信息
@@ -101,6 +105,7 @@
         line: '  "bip": "172.7.21.1/24",'
 
 - hosts: '22'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改'22'主机daemon.json中的bip信息
@@ -110,6 +115,7 @@
         line: '  "bip": "172.7.22.1/24",'
 
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改'200'主机daemon.json中的bip信息
@@ -119,7 +125,11 @@
         line: '  "bip": "172.7.200.1/24",'
 
 - hosts: docker
+  gather_facts: no
   user: root
   tasks:
     - name: 启动docker并设置开机自启
       shell: systemctl start docker && systemctl enable docker
+
+    - name: 拉取nginx:1.7.9镜像
+      shell: docker pull docker.io/library/nginx:1.7.9

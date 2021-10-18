@@ -1,5 +1,6 @@
 ---
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
 #    - name: 下载harbor，有可能下载失败，如果下载失败，手动下载源码包到packages/src目录下
@@ -36,7 +37,7 @@
     - name: 执行harbor目录下的install.sh安装脚本
       shell: sh /opt/harbor/install.sh
 
-    - name: 安装nginx
+    - name: yum安装nginx
       shell: yum install nginx -y
 
     - name: 设置nginx代理
@@ -46,6 +47,7 @@
       shell: systemctl start nginx && systemctl enable nginx
 
 - hosts: '11'
+  gather_facts: no
   user: root
   tasks:
     - name: 在7-11中添加一条A记录

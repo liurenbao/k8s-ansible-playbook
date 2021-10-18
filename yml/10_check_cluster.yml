@@ -11,11 +11,22 @@
     - name: kubectl create -f nginx-ds.yaml
       shell: kubectl create -f /root/nginx-ds.yaml
 
-    - name: kubectl get pods
-      shell: kubectl get pods
+#    - name: 等待pod启动，需要等待120秒左右
+#      pause: seconds=120
+
+    - name: kubectl get pods -o wide
+      shell: kubectl get pods -o wide
+      register: std_out
+
+    - name: 查看kubectl get pods输出
+      debug: msg={{ std_out.stdout_lines }}
 
     - name: kubectl get cs
       shell: kubectl get cs
+      register: std_out
 
-    - name: kubectl get node
-      shell: kubectl get node
+    - name: 查看kubectl get cs输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 查看kubectl get node输出
+      debug: msg={{ std_out.stdout_lines }}

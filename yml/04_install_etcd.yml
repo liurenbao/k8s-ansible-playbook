@@ -1,5 +1,6 @@
 ---
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
       # ca-config证书中，peer表示互相通信,服务端和客户端找对方通信都需要证书
@@ -9,12 +10,13 @@
     - name: 创建基于根证书的etcd-peer-csr文件
       copy: src=../packages/opt/certs/etcd-peer-csr.json dest=/opt/certs/etcd-peer-csr.json mode=0644
 
-    - name: 生成证书文件
+    - name: 生成ca证书文件
       shell:
         cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer etcd-peer-csr.json | cfssl-json -bare etcd-peer
         chdir: /opt/certs
 
 - hosts: etcd
+  gather_facts: no
   user: root
   tasks:
     - name: 创建目录
@@ -33,7 +35,7 @@
     - name: 解压etcd
       shell: tar -zxvf /opt/src/etcd-v3.1.20-linux-amd64.tar.gz -C /opt
 
-    - name: 重命名
+    - name: 重命名ectd
       shell:
         cmd: mv etcd-v3.1.20-linux-amd64 etcd-v3.1.20
         chdir: /opt
@@ -98,7 +100,11 @@
         dest: /etc/supervisord.d/etcd-server.ini
         mode: 0644
 
+    - name: 创建etcd软链接
+      shell: ln -s /opt/etcd/etcdctl /usr/bin/etcdctl
+
 - hosts: '12'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改etcd-server.ini中的IP地址
@@ -138,6 +144,7 @@
         line: '       --advertise-client-urls https://10.4.7.12:2379,http://127.0.0.1:2379 \'
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改etcd-server.ini中的IP地址
@@ -177,6 +184,7 @@
         line: '       --advertise-client-urls https://10.4.7.21:2379,http://127.0.0.1:2379 \'
 
 - hosts: '22'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改etcd-server.ini中的IP地址
@@ -216,16 +224,22 @@
         line: '       --advertise-client-urls https://10.4.7.22:2379,http://127.0.0.1:2379 \'
 
 - hosts: etcd
+  gather_facts: no
   user: root
   tasks:
-    - name: 执行supervisorctl update命令
+    - name: 执行supervisorctl update命令，启动etcd服务
       shell: supervisorctl update
 
-    - name: 等待supervisor启动，需要等待20秒左右
+    - name: 等待etcd服务启动，需要等待20秒左右
       pause: seconds=20
 
     - name: 使用etcdctl cluster-health 命令检查etcd集群健康状态
       shell: /opt/etcd/etcdctl cluster-health
+      register: std_out
+
+    - name: 查看集群状态
+      debug: msg={{ std_out.stdout_lines }}
+
       # [root@hdss7-22 etcd]# ./etcdctl cluster-health
       # member 988139385f78284 is healthy: got healthy result from http://127.0.0.1:2379
       # member 5a0ef2a004fc4349 is healthy: got healthy result from http://127.0.0.1:2379

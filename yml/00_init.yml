@@ -1,6 +1,7 @@
 ---
 - hosts: nodes
   user: root
+  gather_facts: no
   tasks:
     - name: copy rsa.pub
       authorized_key: user=root key="{{ lookup('file', '/Users/liuhuan/.ssh/id_rsa.pub') }}"
@@ -42,6 +43,7 @@
       shell: yum install wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
 
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
 ##      使用wget会因为网络原因导致下载失败，因此已经在packages中提供
@@ -81,36 +83,42 @@
 ## 因此需要设置主机域和业务域，能够将其关联起来
 ## 后期维护时，如果业务变更（从跑mysql服务变成跑redis服务，没有任何影响）
 - hosts: '11'
+  gather_facts: no
   user: root
   tasks:
     - name: set host name
       shell: hostnamectl set-hostname hdss7-11.host.com
 
 - hosts: '12'
+  gather_facts: no
   user: root
   tasks:
     - name: set host name
       shell: hostnamectl set-hostname hdss7-12.host.com
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: set host name
       shell: hostnamectl set-hostname hdss7-21.host.com
 
 - hosts: '22'
+  gather_facts: no
   user: root
   tasks:
     - name: set host name
       shell: hostnamectl set-hostname hdss7-22.host.com
 
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
     - name: set host name
       shell: hostnamectl set-hostname hdss7-200.host.com
 
 - hosts: nodes
+  gather_facts: no
   user: root
   tasks:
     - name: 重启机器

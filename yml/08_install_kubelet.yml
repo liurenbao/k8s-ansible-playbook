@@ -1,5 +1,6 @@
 ---
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
     - name: 上传kubelet-csr.json
@@ -14,6 +15,7 @@
         chdir: /opt/certs
 
 - hosts: k8s
+  gather_facts: no
   user: root
   tasks:
     - name: 拷贝kubelet证书到k8s节点上
@@ -41,6 +43,7 @@
         chdir: /opt/kubernetes/server/bin/conf
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: 配置k8s-node.yml文件
@@ -56,11 +59,16 @@
 
     - name: 查看集群角色权限绑定关系
       shell: kubectl get clusterrolebinding k8s-node
+      register: std_out
+
+    - name: 查看集群角色权限绑定关系输出结果
+      debug: msg={{ std_out.stdout_lines }}
 
 - hosts: '200'
+  gather_facts: no
   user: root
   tasks:
-    - name: 准备pause基础镜像，kubelet在启动的时候需要准备pause基础镜像
+    - name: 使用docker拉取pause基础镜像，kubelet在启动的时候需要准备pause基础镜像
       # 边车模式，先有一个小镜像，kubelet能够控制这个小镜像，先于我们的业务容器起来
       # 让它能够帮我们业务容器设置utils、NAT、和IPC，让这个小容器先把名称空间等占上
       # 我业务容器还没有起来的时候，我们的pod IP已经分配好了，所以我们需要这个pause基础镜像
@@ -74,6 +82,7 @@
 ##      shell: docker push harbor.od.com/public/pause:latest
 
 - hosts: k8s
+  gather_facts: no
   user: root
   tasks:
     - name: 创建kebulet.sh文件
@@ -92,6 +101,7 @@
       shell: mkdir -p /data/logs/kubernetes/kube-kubelet /data/kubelet
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改kubelet.sh脚本
@@ -107,6 +117,7 @@
         line: '[program:kube-kubelet-7-21]'
 
 - hosts: '22'
+  gather_facts: no
   user: root
   tasks:
     - name: 修改kubelet.sh脚本
@@ -122,15 +133,17 @@
         line: '[program:kube-kubelet-7-22]'
 
 - hosts: k8s
+  gather_facts: no
   user: root
   tasks:
-    - name: supervisorctl update
+    - name: 使用supervisorctl启动kubelet
       shell: supervisorctl update
 
-    - name: 等待supervisor启动，需要等待20秒左右
-      pause: seconds=20
+    - name: 等待kubelet启动，需要等待20秒左右
+      pause: seconds=30
 
 - hosts: '21'
+  gather_facts: no
   user: root
   tasks:
       # 假如在生产环境，需要把主控节点和运算节点物理分开部署，
@@ -146,3 +159,10 @@
 
     - name: 给k8s node打标签
       shell: kubectl label node hdss7-22.host.com node-role.kubernetes.io/node=
+
+    - name: 查看k8s node节点
+      shell: kubectl get nodes
+      register: std_out
+
+    - name: 查看输出结果
+      debug: msg={{ std_out.stdout_lines }}
