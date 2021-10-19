@@ -4,7 +4,7 @@
   gather_facts: no
   tasks:
     - name: copy rsa.pub
-      authorized_key: user=root key="{{ lookup('file', '/Users/liuhuan/.ssh/id_rsa.pub') }}"
+      authorized_key: user=root key="{{ lookup('file', '{{ root_path }}/.ssh/id_rsa.pub') }}"
       tags:
         - sshkey
 
