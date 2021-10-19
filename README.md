@@ -1,28 +1,24 @@
 ## 项目简介
 
-这是一个k8s和ansible相结合的学习项目，使用ansible一键部署K8S高可用集群。
-
-> 大部分配置都是写死在脚本文件中，如果需要自定义配置，请自行按需修改，谢谢！
+这是一个k8s和ansible相结合的学习项目，使用ansible在**centos服务器**上一键部署K8S高可用集群。
 
 ### 友情提示
 
 这是一个**不够优雅**的ansible playbook项目，主要是由于内功不足，导致某些代码和项目结构不够标准和优雅。
 
-**有强烈的代码洁癖的请跳过，以免引起不适。**
+**有强烈的代码洁癖的请跳过，以免引起不适。或者也可以提issue告知修改建议，不胜感激！**
 
-**或者也可以提issue告知修改建议，不胜感激！**
+> 大部分配置都是写死在脚本文件中，如果需要自定义配置，请自行按需修改，谢谢！
 
 
 
-## 运行命令
-
-### 环境准备
+## 环境准备
 
 > 这是在执行主机上需要执行的操作。
 >
 > 不提供Windows版本，如有需求，请自行解决环境问题。
 
-macOS
+**macOS**
 
 ```bash
 brew install ansible
@@ -30,11 +26,20 @@ brew install ansible
 
 > 如果macOS没有安装brew，请自行安装brew并设置国内源。
 
-Linux
+**Centos**
 
 ```
 yum install -y epal-release
 yum install -y ansible
+```
+
+**Ubuntu\Debian（未验证）**
+
+```
+sudo apt-get install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt-get update
+sudo apt-get install ansible
 ```
 
 关闭ssh登录前输入确认
@@ -89,15 +94,24 @@ ansible-playbook -i hosts xxx.yml
 
 ### 关于一键部署
 
-如果**不需要**测试将自己打包的镜像推送到harbor中，可以全程一键部署。
+如果**不需要**测试将自己打包的镜像推送到自建harbor中，可以一键部署。
 
-~~在实践中发现在后期还是有需要用到自建harbor仓库的地方，因此还不能实现一键部署。~~
+如果需要使用自建harbor仓库，可以修改访问`harbor.od.com`页面的所在主机的DNS为`10.4.7.11`然后访问页面即可。
 
-关于一键部署的问题，在昨晚回家之后突发奇想，如果我们不用自建harbor仓库的镜像，而是用官方镜像（`docker.io/kubernetes/pause:latest`），是不是就可实现一键部署？
+> 比如我在macOS上访问harbor.od.com，那么就要修改我macOS的DNS。
 
 ### 关于安装包
 
 由于某种不可描述的原因，下载某些包无法下载，因此需要手动下载到指定目录。
+
+```
+wget https://github.com/goharbor/harbor/releases/download/v2.2.2/harbor-offline-installer-v2.2.2.tgz
+wget https://github.com/etcd-io/etcd/releases/download/v3.1.20/etcd-v3.1.20-linux-amd64.tar.gz
+wget https://dl.k8s.io/v1.17.2/kubernetes-server-linux-amd64.tar.gz
+wget https://github.com/flannel-io/flannel/releases/download/v0.11.0/flannel-v0.11.0-linux-amd64.tar.gz
+```
+
+
 
 ### 关于注释
 
@@ -212,7 +226,7 @@ spec:
 
 ### 修改宿主机DNS
 
-在安装部署好harbor之后，修改DNS为`10.4.7.11`，然后就可以通过宿主机访问harbor页面。由于是测试和学习环境，因此可以用`10.4.7.200:1800`来访问harbor页面，在服务器节点之间只要能解析道harbor.od.com即可。
+由于是测试和学习环境，因此可以用`10.4.7.200:1800`来访问harbor页面，在服务器节点之间只要能解析到harbor.od.com即可。
 
 修改完宿主机的DNS之后，如果由于从公司到家切换网络，可能造成ansible连接被控机器缓慢，或访问网页缓慢，可以尝试在DNS中添加DNS地址：
 
