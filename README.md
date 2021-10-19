@@ -1,15 +1,74 @@
-Docker与K8S学习笔记。
+## 项目简介
+
+这是一个k8s和ansible相结合的学习项目，使用ansible一键部署K8S高可用集群。
+
+> 大部分配置都是写死在脚本文件中，如果需要自定义配置，请自行按需修改，谢谢！
+
+### 友情提示
+
+这是一个**不够优雅**的ansible playbook项目，主要是由于内功不足，导致某些代码和项目结构不够标准和优雅。
+
+**有强烈的代码洁癖的请跳过，以免引起不适。**
+
+**或者也可以提issue告知修改建议，不胜感激！**
+
+
 
 ## 运行命令
 
-### 手动部署
+### 环境准备
+
+> 这是在执行主机上需要执行的操作。
+>
+> 不提供Windows版本，如有需求，请自行解决环境问题。
+
+macOS
 
 ```bash
-ansible-playbook -i hosts xxx.yml
+brew install ansible
 ```
-其中xxx是需要执行的yml文件名。
 
-#### 一键部署脚本
+> 如果macOS没有安装brew，请自行安装brew并设置国内源。
+
+Linux
+
+```
+yum install -y epal-release
+yum install -y ansible
+```
+
+关闭ssh登录前输入确认
+
+```
+echo "host_key_checking = False" >> /etc/ansible/ansible.cfg
+```
+
+生成ssh key
+
+```
+ssh-keygen -t rsa -b 4096
+```
+
+> 可以加上`-C "邮箱地址"`，我这里是没有加的
+
+修改操作主机的`home`目录参数
+
+```
+vim group_vars/all.yml
+root_path: 你的home目录
+
+# macOS示例
+# root_path: /Users/liuhuan
+
+# Linux示例
+# root_path: /root
+```
+
+
+
+## 项目部署
+
+### 一键部署
 
 进入到k8s项目目录下，执行命令
 
@@ -17,13 +76,16 @@ ansible-playbook -i hosts xxx.yml
 sh install.sh
 ```
 
+### 手动部署
+
+```bash
+ansible-playbook -i hosts xxx.yml
+```
+其中xxx是需要执行的yml文件名，需要按照数字编号顺序执行，`03_test_harbor.yml`**不建议执行**，需要通过浏览器访问页面进行配置。
+
 
 
 ## 安装注意事项
-
-### 关于项目
-
-由于这是一个k8s和ansible相结合的学习项目，大部分配置都是写死在脚本文件中，如果需要自定义配置，请自行按需修改，谢谢！
 
 ### 关于一键部署
 
@@ -36,17 +98,6 @@ sh install.sh
 ### 关于安装包
 
 由于某种不可描述的原因，下载某些包无法下载，因此需要手动下载到指定目录。
-
-### 关于playbook
-
-这不是一个优雅的ansible playbook项目，原因如下：
-
-* 需要手动进入页面去进行操作，再执行后续命令。
-* 其次是由于内功不足，某些操作也不够优雅。
-
-**有强烈的代码洁癖的请跳过，以免引起不适。**
-
-**或者也可以提issue告知修改建议，不胜感激！**
 
 ### 关于注释
 
@@ -65,6 +116,8 @@ sh install.sh
 | 10.4.7.200 | hdss7-200.host.com |        |   Y    |       |      |
 
 ### 关于hosts文件
+
+后期hosts文件如有更新，请以最新提交为准
 
 ```text
 [nodes]
@@ -88,7 +141,6 @@ node04
 
 [200]
 node05
-
 ```
 
 > 中括号 `[]` 中的内容可以理解为别名，可以在ansible playbook中使用`'11'`来表示是`10.4.7.11`那台主机，使用`nodes`来表示所有主机。
@@ -160,7 +212,7 @@ spec:
 
 ### 修改宿主机DNS
 
-建议在安装部署好harbor之后，再修改DNS为`10.4.7.11`，然后就可以通过宿主机访问harbor页面。
+在安装部署好harbor之后，修改DNS为`10.4.7.11`，然后就可以通过宿主机访问harbor页面。由于是测试和学习环境，因此可以用`10.4.7.200:1800`来访问harbor页面，在服务器节点之间只要能解析道harbor.od.com即可。
 
 修改完宿主机的DNS之后，如果由于从公司到家切换网络，可能造成ansible连接被控机器缓慢，或访问网页缓慢，可以尝试在DNS中添加DNS地址：
 
