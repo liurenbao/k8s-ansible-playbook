@@ -142,8 +142,9 @@
 - hosts: '21'
   gather_facts: no
   user: root
+  tasks:
+    # -s source -D(Delete)
     - name: 取消原有iptables转发规则
-      # -s source -D(Delete)
       shell: iptables -t nat -D POSTROUTING -s 172.7.21.0/24 ! -o docker0 -j MASQUERADE
 
     - name: 设置iptables转发规则，将出网网卡设置为docker0
@@ -154,6 +155,7 @@
 - hosts: '22'
   gather_facts: no
   user: root
+  tasks:
     - name: 取消原有iptables转发规则
       shell: iptables -t nat -D POSTROUTING -s 172.7.22.0/24 ! -o docker0 -j MASQUERADE
 
