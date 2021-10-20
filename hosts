@@ -41,3 +41,7 @@ node02
 [kube-proxy]
 node03
 node04
+
+[flannel]
+node03
+node04
