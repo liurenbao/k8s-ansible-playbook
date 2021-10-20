@@ -8,11 +8,11 @@
         dest: /root/nginx-ds.yaml
         mode: 0644
 
+    - name: 拉取nginx:1.7.9镜像
+      shell: docker pull docker.io/library/nginx:1.7.9
+
     - name: kubectl create -f nginx-ds.yaml
       shell: kubectl create -f /root/nginx-ds.yaml
-
-#    - name: 等待pod启动，需要等待120秒左右
-#      pause: seconds=120
 
     - name: kubectl get pods -o wide
       shell: kubectl get pods -o wide

@@ -1,0 +1,128 @@
+---
+- hosts: flannel
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 下载flannel，使用wget可能会下载失败，所以这里是提前下载下来放到../packages/src目录
+##      shell:
+##        cmd: wget https://github.com/flannel-io/flannel/releases/download/v0.11.0/flannel-v0.11.0-linux-amd64.tar.gz
+##        chdir: /opt/src
+      copy:
+        src: ../packages/src/flannel-v0.11.0-linux-amd64.tar.gz
+        dest: /opt/src/flannel-v0.11.0-linux-amd64.tar.gz
+        mode: 0644
+
+    - name: 创建flannel相关目录
+      shell: mkdir -p /opt/flannel-v0.11.0
+
+    - name: 解压flannel到指定目录
+      shell: tar xf /opt/src/flannel-v0.11.0-linux-amd64.tar.gz -C /opt/flannel-v0.11.0
+
+    - name: 设置软链接
+      shell: ln -s /opt/flannel-v0.11.0 /opt/flannel
+
+    - name: 创建subnet.env配置文件
+      # 把容器的网络规划成一个大的网段
+      copy:
+        src: ../packages/opt/flannel/subnet.env
+        dest: /opt/flannel/subnet.env
+        mode: 0644
+
+    - name: 创建flanneld.sh配置文件
+      # 把容器的网络规划成一个大的网段
+      # public-ip是本身暴露出来的运算节点（node节点）IP地址
+      # 要看网卡名称是否是eth0，如果不是要按需修改
+      copy:
+        src: ../packages/opt/flannel/flanneld.sh
+        dest: /opt/flannel/flanneld.sh
+        mode: 0755
+
+    - name: 创建supervisor配置文件
+      copy:
+        src: ../packages/etc/supervisord.d/flanneld.ini
+        dest: /etc/supervisord.d/flanneld.ini
+        mode: 0644
+
+    - name: 创建证书目录
+      shell: mkdir -p /opt/flannel/cert
+
+    - name: 从7-200机器上拷贝ca证书
+      # 因为flannel需要使用etcd做一些默认存储配置的，因此需要flanne连上etcd通信
+      # 对于etcd来说，flannel是etcd的客户端，因此需要拷贝client.pem
+      shell:
+        cmd: sshpass -p '1' scp -oStrictHostKeyChecking=no root@10.4.7.200:/opt/certs/ca.pem /opt/flannel/cert
+
+    - name: 从7-200机器上拷贝client证书
+      shell:
+        cmd: sshpass -p '1' scp -oStrictHostKeyChecking=no root@10.4.7.200:/opt/certs/client*.pem /opt/flannel/cert
+
+    - name: 创建flannel日志相关目录
+      shell: mkdir -p /data/logs/flanneld
+
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
+    # '{"Network": "172.7.0.0/16", "SubnetLen": 24, "SubnetMin": "172.7.21.0","SubnetMax": "172.7.22.0", "Backend": {"Type": "host-gw"}}'
+    - name: 操作etcd，增加host-gw
+      shell:
+        cmd: >
+          ETCDCTL_API=2 etcdctl set /coreos.com/network/config
+          '{"Network": "172.7.0.0/16", "Backend": {"Type": "host-gw"}}'
+
+    - name: 查看etcdctl get /coreos.com/network/config输出
+      shell: etcdctl get /coreos.com/network/config
+      register: std_out
+
+    - name: 查看etcdctl get /coreos.com/network/config输出
+      debug: msg={{ std_out.stdout_lines }}
+
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 修改flanneld.sh脚本
+      lineinfile:
+        dest: /opt/flannel/flanneld.sh
+        regexp: '^(\s*)--public-ip'
+        line: '  --public-ip=10.4.7.21 \'
+
+    - name: 修改subnet.env脚本
+      lineinfile:
+        dest: /opt/flannel/subnet.env
+        regexp: '^FLANNEL_SUBNET'
+        line: 'FLANNEL_SUBNET=172.7.21.1/24'
+
+- hosts: '22'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 修改flanneld.sh脚本
+      lineinfile:
+        dest: /opt/flannel/flanneld.sh
+        regexp: '^(\s*)--public-ip'
+        line: '  --public-ip=10.4.7.22 \'
+
+    - name: 修改subnet.env脚本
+      lineinfile:
+        dest: /opt/flannel/subnet.env
+        regexp: '^FLANNEL_SUBNET'
+        line: 'FLANNEL_SUBNET=172.7.22.1/24'
+
+- hosts: flannel
+  gather_facts: no
+  user: root
+  tasks:
+#    - name: 等待etcd配置生效
+#      pause: seconds=60
+
+    - name: 使用supervisorctl启动flannel服务
+      shell: supervisorctl update
+
+    - name: 查看输出结果
+      shell: cat /data/logs/flanneld/flanneld.stdout.log
+      register: std_out
+
+    - name: 查看flanneld.stdout.log输出结果
+      debug: msg={{ std_out.stdout_lines }}
+

@@ -139,7 +139,7 @@
     - name: 使用supervisorctl启动kubelet
       shell: supervisorctl update
 
-    - name: 等待kubelet启动，需要等待20秒左右
+    - name: 等待kubelet启动
       pause: seconds=30
 
 - hosts: '21'

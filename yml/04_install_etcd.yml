@@ -230,23 +230,12 @@
     - name: 执行supervisorctl update命令，启动etcd服务
       shell: supervisorctl update
 
-    - name: 等待etcd服务启动，需要等待20秒左右
-      pause: seconds=20
-
-    - name: 使用etcdctl cluster-health 命令检查etcd集群健康状态
-      shell: /opt/etcd/etcdctl cluster-health
-      register: std_out
-
-    - name: 查看集群状态
-      debug: msg={{ std_out.stdout_lines }}
-
-      # [root@hdss7-22 etcd]# ./etcdctl cluster-health
-      # member 988139385f78284 is healthy: got healthy result from http://127.0.0.1:2379
-      # member 5a0ef2a004fc4349 is healthy: got healthy result from http://127.0.0.1:2379
-      # member f4a0cb0a765574a8 is healthy: got healthy result from http://127.0.0.1:2379
-      # cluster is healthy
-
-      # [root@hdss7-22 etcd]# ./etcdctl member list
-      # 988139385f78284: name=etcd-server-7-22 peerURLs=https://10.4.7.22:2380 clientURLs=http://127.0.0.1:2379,https://10.4.7.22:2379 isLeader=false
-      # 5a0ef2a004fc4349: name=etcd-server-7-21 peerURLs=https://10.4.7.21:2380 clientURLs=http://127.0.0.1:2379,https://10.4.7.21:2379 isLeader=true
-      # f4a0cb0a765574a8: name=etcd-server-7-12 peerURLs=https://10.4.7.12:2380 clientURLs=http://127.0.0.1:2379,https://10.4.7.12:2379 isLeader=false
+##    - name: 等待etcd服务启动，需要等待20秒左右
+##      pause: seconds=20
+##
+##    - name: 使用etcdctl cluster-health 命令检查etcd集群健康状态
+##      shell: /opt/etcd/etcdctl cluster-health
+##      register: std_out
+##
+##    - name: 查看集群状态
+##      debug: msg={{ std_out.stdout_lines }}

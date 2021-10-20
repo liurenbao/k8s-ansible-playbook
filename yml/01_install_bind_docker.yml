@@ -130,6 +130,3 @@
   tasks:
     - name: 启动docker并设置开机自启
       shell: systemctl start docker && systemctl enable docker
-
-    - name: 拉取nginx:1.7.9镜像
-      shell: docker pull docker.io/library/nginx:1.7.9

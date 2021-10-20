@@ -47,8 +47,11 @@ ansible-playbook -i hosts ./yml/08_install_kubelet.yml
 echo "$(date "+%Y-%m-%d %H:%M:%S") ansible-playbook -i hosts 09_install_kube_proxy.yml"
 ansible-playbook -i hosts ./yml/09_install_kube_proxy.yml
 
-echo "$(date "+%Y-%m-%d %H:%M:%S") ansible-playbook -i hosts 10_check_cluster.yml -vvv"
-ansible-playbook -i hosts ./yml/10_check_cluster.yml -vvv
+echo "$(date "+%Y-%m-%d %H:%M:%S") ansible-playbook -i hosts 10_check_cluster.yml"
+ansible-playbook -i hosts ./yml/10_check_cluster.yml
+
+echo "$(date "+%Y-%m-%d %H:%M:%S") ansible-playbook -i hosts yml/11_install_flannel.yml"
+ansible-playbook -i hosts yml/11_install_flannel.yml
 
 e_time=$(date "+%Y-%m-%d %H:%M:%S")
 
