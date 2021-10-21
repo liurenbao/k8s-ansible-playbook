@@ -1,0 +1,152 @@
+---
+- hosts: '200'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 通过向K8S交付容器的方式交付服务
+      shell: ls
+
+    - name: 部署K8S的内网资源配置清单http服务
+      copy:
+        src: ../packages/etc/nginx/conf.d/k8s-yaml.od.com.conf
+        dest: /etc/nginx/conf.d/k8s-yaml.od.com.conf
+        mode: 0644
+
+    - name: 创建相关目录
+      shell: mkdir -p /data/k8s-yaml
+
+    - name: 使用nginx -t检查配置文件是否正确
+      shell: nginx -t
+      register: std_out
+
+    - name: 查看nginx输出结果
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 重新加载nginx配置信息
+      shell: nginx -s reload
+
+- hosts: '11'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 在自建DNS服务器上将域名解析出来
+      shell: ls
+
+    - name: 修改/var/named/od.com.zone
+      lineinfile:
+        dest: /var/named/od.com.zone
+        regexp: '^k8s-yaml'
+        line: 'k8s-yaml              A 10.4.7.200'
+
+    - name: 重启named服务
+      shell: systemctl restart named
+
+    - name: 重启网卡服务
+      shell: systemctl restart network
+
+    - name: 查看解析记录是否正常
+      shell: dig -t A k8s-yaml.od.com @10.4.7.11 +short
+      register: std_out
+
+    - name: 查看解析记录输出结果
+      debug: msg={{ std_out.stdout_lines }}
+
+- hosts: '200'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 创建coredns相关目录
+      shell:
+        cmd: mkdir coredns
+        chdir: /data/k8s-yaml
+
+    - name: 使用docker拉取coredns镜像来部署
+      shell: docker pull coredns/coredns:1.6.1
+
+    - name: 给coredns镜像打标签
+      shell: docker tag c0f6e815079e harbor.od.com/library/coredns:v1.6.1
+
+    - name: 创建cm.yaml资源配置清单
+      copy:
+        src: ../packages/data/k8s-yaml/coredns/cm.yaml
+        dest: /data/k8s-yaml/coredns/cm.yaml
+        mode: 0644
+
+    - name: 创建dp.yaml资源配置清单
+      copy:
+        src: ../packages/data/k8s-yaml/coredns/dp.yaml
+        dest: /data/k8s-yaml/coredns/dp.yaml
+        mode: 0644
+
+    - name: 创建rbac.yaml资源配置清单
+      copy:
+        src: ../packages/data/k8s-yaml/coredns/rbac.yaml
+        dest: /data/k8s-yaml/coredns/rbac.yaml
+        mode: 0644
+
+    - name: 创建svc.yaml资源配置清单
+      copy:
+        src: ../packages/data/k8s-yaml/coredns/svc.yaml
+        dest: /data/k8s-yaml/coredns/svc.yaml
+        mode: 0644
+
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
+      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/rbac.yaml
+      register: std_out
+
+    - name: 查看资源配置清单创建输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
+      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/cm.yaml
+      register: std_out
+
+    - name: 查看资源配置清单创建输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
+      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/dp.yaml
+      register: std_out
+
+    - name: 查看资源配置清单创建输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
+      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/svc.yaml
+      register: std_out
+
+    - name: 查看资源配置清单创建输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 查看coredns在k8s中的状态
+      shell: kubectl get all -n kube-system -o wide
+      register: std_out
+
+    - name: 查看coredns在k8s中的状态输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 查看集群IP配置信息
+      shell: cat /opt/kubernetes/server/bin/kubelet.sh
+      register: std_out
+
+    - name: 查看集群IP配置信息输出，可以看到集群DNS已经在这里配置好了
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 查看coredns解析www.baidu.com的情况
+      shell: dig -t A www.baidu.com @192.168.0.2 +short
+      register: std_out
+
+    - name: 查看coredns解析www.baidu.com的情况输出
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 查看coredns解析hdss7-21.host.com的情况
+      shell: dig -t A hdss7-21.host.com @192.168.0.2 +short
+      register: std_out
+
+    - name: 查看coredns解析www.baidu.com的情况输出，因为我们在cm.yaml文件里面声明了forward
+      # 它的下一级DNS就是10.4.7.11
+      debug: msg={{ std_out.stdout_lines }}
