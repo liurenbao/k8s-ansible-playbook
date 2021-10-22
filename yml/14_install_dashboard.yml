@@ -1,0 +1,141 @@
+---
+- hosts: '200'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 创建目录
+      shell: mkdir -p /data/k8s-yaml/dashboard
+
+    - name: 创建dashboard资源配置清单
+      copy:
+        src: ../packages/data/k8s-yaml/dashboard/{{ item }}
+        dest: /data/k8s-yaml/dashboard/{{ item }}
+        mode: 0644
+      with_items:
+        - rbac.yaml
+        - dp.yaml
+        - svc.yaml
+        - ingress.yaml
+
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 拉取k8scn/kubernetes-dashboard镜像
+      shell: docker pull hexun/kubernetes-dashboard-amd64:v1.10.1
+
+    - name: 应用dashboard资源配置清单
+      shell: kubectl apply -f http://k8s-yaml.od.com/dashboard/{{ item }}
+      with_items:
+        - rbac.yaml
+        - dp.yaml
+        - svc.yaml
+        - ingress.yaml
+
+- hosts: ingress
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 重启docker
+      shell: systemctl restart docker
+
+    - name: 等待dashboard资源创建
+      pause: seconds=30
+
+- hosts: '11'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 在/var/named/od.com.zone增加dashboard域名解析记录
+      lineinfile:
+        dest: /var/named/od.com.zone
+        regexp: '^dashboard'
+        line: 'dashboard        A 10.4.7.10'
+
+    - name: 重启named服务，建议使用rndc服务
+      shell: systemctl restart named
+
+    - name: 重启network
+      shell: systemctl restart network
+
+    - name: 查看dashboard DNS解析记录
+      shell: dig -t A dashboard.od.com @10.4.7.11 +short
+      register: std_out
+
+    - name: 查看dashboard DNS解析记录输出
+      debug: msg={{ std_out.stdout_lines }}
+
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 查看coredns解析dashboard.od.com的情况
+      shell: dig -t A dashboard.od.com @192.168.0.2 +short
+      register: std_out
+
+    - name: 查看coredns解析dashboard.od.com的情况输出，因为我们在cm.yaml文件里面声明了forward
+      # 它的下一级DNS就是10.4.7.11，而我们在7.11和7.12上做了VIP，因此实际解析出来的应该上7.10
+      debug: msg={{ std_out.stdout_lines }}
+
+    - name: 如果访问dashboard页面一直显示not found, 3秒后返回，逮住机会点击左侧标签，通通点一遍，然后就不报错了
+      shell: ls
+
+- hosts: '200'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 手撕dashboard证书
+      shell:
+        cmd: (umask 077; openssl genrsa -out dashboard.od.com.key 2048)
+        chdir: /opt/certs
+
+    - name: 手撕dashboard证书
+      shell:
+        cmd: openssl req -new -key dashboard.od.com.key -out dashboard.od.com.csr -subj "/CN=dashboard.od.com/C=CN/ST=BJ/L=Beijing/O=OldboyEdu/OU=ops"
+        chdir: /opt/certs
+
+    - name: 使用openssl签发dashboard证书
+      shell:
+        cmd: openssl x509 -req -in dashboard.od.com.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out dashboard.od.com.crt -days 3650
+        chdir: /opt/certs
+
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 查看dashboard token命令，kubectl get secret -n kube-system
+      shell: kubectl get secret -n kube-system | grep admin-token
+      register: std_out
+
+    - name: 查看dashboard admin token
+      debug: msg={{ std_out.stdout_lines.msg }}
+
+- hosts: '11'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 创建certs目录
+      shell: mkdir -p /etc/nginx/certs
+
+    - name: 从200机器上拷贝dashboard证书
+      shell: sshpass -p '1' scp -r -oStrictHostKeyChecking=no root@10.4.7.200:/opt/certs/{{ item }} /etc/nginx/certs
+      with_items:
+        - dashboard.od.com.crt
+        - dashboard.od.com.key
+
+    - name: 创建dashboard.od.com.conf配置文件
+      copy:
+        src: ../packages/etc/nginx/conf.d/dashboard.od.com.conf
+        dest: /etc/nginx/conf.d/dashboard.od.com.conf
+        mode: 0644
+
+    - name: 检查ngnix配置文件是否正确
+      shell: nginx -t
+      register: std_out
+
+    - name: 检查ngnix配置文件是否正确输出结果
+      debug: msg={{ std_out.stdout_lines.msg }}
+
+    - name: 创建dashboard.od.com.conf配置文件
+      shell: nginx -s reload
+
