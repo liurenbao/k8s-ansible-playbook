@@ -46,9 +46,6 @@
     - name: 创建etcd相关目录
       shell: mkdir -p /opt/etcd/certs /data/etcd /data/logs/etcd-server
 
-    - name: 下载sshpass工具
-      shell: yum install sshpass -y
-
     - name: 从200机器上复制etcd证书文件
       shell: sshpass -p '1' scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/etcd*.pem /opt/etcd/certs
 
@@ -107,12 +104,6 @@
   gather_facts: no
   user: root
   tasks:
-    - name: 修改etcd-server.ini中的IP地址
-      lineinfile:
-        dest: /etc/supervisord.d/etcd-server.ini
-        regexp: '^[\[]program:'
-        line: '[program:etcd-server-7-12]'
-
     - name: 修改etcd-server-start.sh脚本
       lineinfile:
         dest: /opt/etcd/etcd-server-startup.sh
@@ -147,11 +138,11 @@
   gather_facts: no
   user: root
   tasks:
-    - name: 修改etcd-server.ini中的IP地址
-      lineinfile:
-        dest: /etc/supervisord.d/etcd-server.ini
-        regexp: '^[\[]program:'
-        line: '[program:etcd-server-7-21]'
+#    - name: 修改etcd-server.ini中的IP地址
+#      lineinfile:
+#        dest: /etc/supervisord.d/etcd-server.ini
+#        regexp: '^[\[]program:'
+#        line: '[program:etcd-server-7-21]'
 
     - name: 修改etcd-server-start.sh脚本
       lineinfile:
@@ -187,12 +178,6 @@
   gather_facts: no
   user: root
   tasks:
-    - name: 修改etcd-server.ini中的IP地址
-      lineinfile:
-        dest: /etc/supervisord.d/etcd-server.ini
-        regexp: '^[\[]program:'
-        line: '[program:etcd-server-7-22]'
-
     - name: 修改etcd-server-start.sh脚本
       lineinfile:
         dest: /opt/etcd/etcd-server-startup.sh
