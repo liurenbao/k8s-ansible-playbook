@@ -20,10 +20,6 @@
   gather_facts: no
   user: root
   tasks:
-    - name: 下载sshpass
-      shell: yum install -y sshpass
-      ignore_errors: yes
-
     - name: 分发kube-proxy证书
       shell: sshpass -p '1' scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@10.4.7.200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
 
@@ -73,26 +69,6 @@
 
     - name: 创建kube-proxy相关目录
       shell: mkdir -p /data/logs/kubernetes/kube-proxy
-
-- hosts: '21'
-  gather_facts: no
-  user: root
-  tasks:
-    - name: 修改kube-proxy.ini文件
-      lineinfile:
-        dest: /etc/supervisord.d/kube-proxy.ini
-        regexp: '^[\[]program'
-        line: '[program:kube-proxy-7-21]'
-
-- hosts: '22'
-  gather_facts: no
-  user: root
-  tasks:
-    - name: 修改kube-proxy.ini文件
-      lineinfile:
-        dest: /etc/supervisord.d/kube-proxy.ini
-        regexp: '^[\[]program'
-        line: '[program:kube-proxy-7-22]'
 
 - hosts: kube-proxy
   gather_facts: no

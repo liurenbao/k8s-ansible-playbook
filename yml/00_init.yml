@@ -40,7 +40,7 @@
       shell: curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 
     - name: install tools
-      shell: yum install wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
+      shell: yum install sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
 
 - hosts: '200'
   gather_facts: no

@@ -110,12 +110,6 @@
         regexp: '^(\s*)--hostname-override'
         line: '  --hostname-override hdss7-21.host.com \'
 
-    - name: 修改kubelet.ini文件
-      lineinfile:
-        dest: /etc/supervisord.d/kube-kubelet.ini
-        regexp: '^[\[]program'
-        line: '[program:kube-kubelet-7-21]'
-
 - hosts: '22'
   gather_facts: no
   user: root
@@ -125,12 +119,6 @@
         dest: /opt/kubernetes/server/bin/kubelet.sh
         regexp: '^(\s*)--hostname-override'
         line: '  --hostname-override hdss7-22.host.com \'
-
-    - name: 修改kubelet.ini文件
-      lineinfile:
-        dest: /etc/supervisord.d/kube-kubelet.ini
-        regexp: '^[\[]program'
-        line: '[program:kube-kubelet-7-22]'
 
 - hosts: k8s
   gather_facts: no

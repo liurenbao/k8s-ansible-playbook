@@ -70,9 +70,9 @@
         dest: /data/k8s-yaml/coredns/{{ item }}
         mode: 0644
       with_items:
-        - cm.yaml
-        - dp.yaml
         - rbac.yaml
+        - dp.yaml
+        - cm.yaml
         - svc.yaml
 
 - hosts: '21'
@@ -87,20 +87,13 @@
         - rbac.yaml
         - svc.yaml
 
+- hosts: ingress
+  gather_facts: no
+  user: root
+  tasks:
     - name: 重启kubelet，否则可能会有问题
-      shell: supervisorctl restart kube-kubelet-7-21
+      shell: supervisorctl restart kubelet
 
-- hosts: '22'
-  gather_facts: no
-  user: root
-  tasks:
-    - name: 重启kubelet
-      shell: supervisorctl restart kube-kubelet-7-22
-
-- hosts: coredns
-  gather_facts: no
-  user: root
-  tasks:
     - name: 重启docker
       shell: systemctl restart docker
 

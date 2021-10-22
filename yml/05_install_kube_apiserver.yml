@@ -90,26 +90,6 @@
     - name: 创建apiserver相关目录
       shell: mkdir -p /data/logs/kubernetes/kube-apiserver
 
-- hosts: '21'
-  gather_facts: no
-  user: root
-  tasks:
-    - name: 编辑ini配置文件，和主机IP地址保持一致
-      lineinfile:
-        dest: /etc/supervisord.d/kube-apiserver.ini
-        regexp: '^[\[]program'
-        line: '[program:kube-apiserver-7-21]'
-
-- hosts: '22'
-  gather_facts: no
-  user: root
-  tasks:
-    - name: 编辑ini配置文件，和主机IP地址保持一致
-      lineinfile:
-        dest: /etc/supervisord.d/kube-apiserver.ini
-        regexp: '^[\[]program'
-        line: '[program:kube-apiserver-7-22]'
-
 - hosts: k8s
   gather_facts: no
   user: root

@@ -32,6 +32,20 @@
         - svc.yaml
         - ingress.yaml
 
+- hosts: ingress
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 重启docker
+      shell: systemctl restart docker
+
+    - name: 等待traefik资源创建
+      pause: seconds=30
+
+- hosts: '22'
+  gather_facts: no
+  user: root
+  tasks:
     - name: 查看创建状态
       shell: kubectl get pods -n kube-system -o wide
       register: std_out
@@ -42,9 +56,11 @@
     - name: 查看端口监听
       shell: netstat -luntp | grep 81
       register: std_out
+      ignore_errors: yes
 
     - name: 查看端口监听输出结果
       debug: msg={{ std_out.stdout_lines }}
+      ignore_errors: yes
 
 - hosts: nginx
   gather_facts: no
@@ -70,6 +86,9 @@
   tasks:
     - name: 重启named服务
       shell: systemctl restart named
+
+    - name: 重启network
+      shell: systemctl restart network
 
     - name: 验证DNS解析是否正常
       shell: dig -t A k8s-yaml.od.com @10.4.7.11 +short
