@@ -170,6 +170,16 @@
     - name: 保存iptables规则到/etc/sysconfig/iptables
       shell: iptables-save > /etc/sysconfig/iptables
 
+    - name: 查看iptables规则
+      shell: iptables-save | grep -i reject
+
     - name: 删除掉可能会影响pod通信的规则
-      shell: echo $(iptables-save | grep -i reject) | xargs iptables -t filter -D
+      shell: iptables -t filter -D INPUT  -j REJECT --reject-with icmp-host-prohibited
       ignore_errors: yes
+
+    - name: 删除掉可能会影响pod通信的规则
+      shell: iptables -t filter -D FORWARD -j REJECT --reject-with icmp-host-prohibited
+      ignore_errors: yes
+
+    - name: 保存iptables规则到/etc/sysconfig/iptables
+      shell: iptables-save > /etc/sysconfig/iptables
