@@ -62,6 +62,10 @@ ansible-playbook -i hosts yml/13_install_ingress.yml
 echo "$(date "+%Y-%m-%d %H:%M:%S") 14_install_dashboard.yml"
 ansible-playbook -i hosts yml/14_install_dashboard.yml
 
+echo "$(date "+%Y-%m-%d %H:%M:%S") 15_install_hepster.yml"
+echo "不建议安装heapster，可以用prometheus来代替，如果需要，可以在命令行单独执行下面一条命令"
+#ansible-playbook -i hosts yml/15_install_hepster.yml
+
 e_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 echo "开始时间：${s_time}"
