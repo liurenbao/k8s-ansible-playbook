@@ -56,9 +56,7 @@
   user: root
   tasks:
     - name: 创建coredns相关目录
-      shell:
-        cmd: mkdir coredns
-        chdir: /data/k8s-yaml
+      shell:  mkdir -p /data/k8s-yaml/coredns
 
     - name: 使用docker拉取coredns镜像来部署
       shell: docker pull coredns/coredns:1.6.1
@@ -68,60 +66,48 @@
 
     - name: 创建cm.yaml资源配置清单
       copy:
-        src: ../packages/data/k8s-yaml/coredns/cm.yaml
-        dest: /data/k8s-yaml/coredns/cm.yaml
+        src: ../packages/data/k8s-yaml/coredns/{{ item }}
+        dest: /data/k8s-yaml/coredns/{{ item }}
         mode: 0644
-
-    - name: 创建dp.yaml资源配置清单
-      copy:
-        src: ../packages/data/k8s-yaml/coredns/dp.yaml
-        dest: /data/k8s-yaml/coredns/dp.yaml
-        mode: 0644
-
-    - name: 创建rbac.yaml资源配置清单
-      copy:
-        src: ../packages/data/k8s-yaml/coredns/rbac.yaml
-        dest: /data/k8s-yaml/coredns/rbac.yaml
-        mode: 0644
-
-    - name: 创建svc.yaml资源配置清单
-      copy:
-        src: ../packages/data/k8s-yaml/coredns/svc.yaml
-        dest: /data/k8s-yaml/coredns/svc.yaml
-        mode: 0644
+      with_items:
+        - cm.yaml
+        - dp.yaml
+        - rbac.yaml
+        - svc.yaml
 
 - hosts: '21'
   gather_facts: no
   user: root
   tasks:
     - name: 使用陈述式资源管理方法去apply声明式资源配置清单
-      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/rbac.yaml
-      register: std_out
+      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/{{ item }}
+      with_items:
+        - cm.yaml
+        - dp.yaml
+        - rbac.yaml
+        - svc.yaml
 
-    - name: 查看资源配置清单创建输出
-      debug: msg={{ std_out.stdout_lines }}
+    - name: 重启kubelet，否则可能会有问题
+      shell: supervisorctl restart kube-kubelet-7-21
 
-    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
-      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/cm.yaml
-      register: std_out
+- hosts: '22'
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 重启kubelet
+      shell: supervisorctl restart kube-kubelet-7-22
 
-    - name: 查看资源配置清单创建输出
-      debug: msg={{ std_out.stdout_lines }}
+- hosts: coredns
+  gather_facts: no
+  user: root
+  tasks:
+    - name: 重启docker
+      shell: systemctl restart docker
 
-    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
-      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/dp.yaml
-      register: std_out
-
-    - name: 查看资源配置清单创建输出
-      debug: msg={{ std_out.stdout_lines }}
-
-    - name: 使用陈述式资源管理方法去apply声明式资源配置清单
-      shell: kubectl apply -f http://k8s-yaml.od.com/coredns/svc.yaml
-      register: std_out
-
-    - name: 查看资源配置清单创建输出
-      debug: msg={{ std_out.stdout_lines }}
-
+- hosts: '21'
+  gather_facts: no
+  user: root
+  tasks:
     - name: 查看coredns在k8s中的状态
       shell: kubectl get all -n kube-system -o wide
       register: std_out
