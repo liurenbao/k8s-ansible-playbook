@@ -45,3 +45,7 @@ node04
 [flannel]
 node03
 node04
+
+[ingress]
+node03
+node04
