@@ -59,6 +59,9 @@ ansible-playbook -i hosts yml/12_install_CoreDNS.yml
 echo "$(date "+%Y-%m-%d %H:%M:%S") 13_install_ingress.yml"
 ansible-playbook -i hosts yml/13_install_ingress.yml
 
+#echo "$(date "+%Y-%m-%d %H:%M:%S") 14_install_dashboard.yml"
+#ansible-playbook -i hosts yml/14_install_dashboard.yml
+
 e_time=$(date "+%Y-%m-%d %H:%M:%S")
 
 echo "开始时间：${s_time}"
