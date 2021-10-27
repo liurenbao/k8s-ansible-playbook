@@ -1,51 +1,56 @@
 [nodes]
-node01 ansible_ssh_user="root" ansible_ssh_host=10.4.7.11 ansible_ssh_port=22 ansible_ssh_pass="1"
-node02 ansible_ssh_user="root" ansible_ssh_host=10.4.7.12 ansible_ssh_port=22 ansible_ssh_pass="1"
-node03 ansible_ssh_user="root" ansible_ssh_host=10.4.7.21 ansible_ssh_port=22 ansible_ssh_pass="1"
-node04 ansible_ssh_user="root" ansible_ssh_host=10.4.7.22 ansible_ssh_port=22 ansible_ssh_pass="1"
-node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-11 ansible_ssh_user="root" ansible_ssh_host=10.4.7.11 ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-12 ansible_ssh_user="root" ansible_ssh_host=10.4.7.12 ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-21 ansible_ssh_user="root" ansible_ssh_host=10.4.7.21 ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-22 ansible_ssh_user="root" ansible_ssh_host=10.4.7.22 ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-200 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 ansible_ssh_pass="1"
 
 [11]
-node01
+hdss7-11
 
 [12]
-node02
+hdss7-12
 
 [21]
-node03
+hdss7-21
 
 [22]
-node04
+hdss7-22
 
 [200]
-node05
+hdss7-200
 
 [docker]
-node03
-node04
-node05
+hdss7-21
+hdss7-22
+hdss7-200
 
 [etcd]
-node02
-node03
-node04
+hdss7-12
+hdss7-21
+hdss7-22
 
 [k8s]
-node03
-node04
+hdss7-21
+hdss7-22
 
 [nginx]
-node01
-node02
+hdss7-11
+hdss7-12
 
 [kube-proxy]
-node03
-node04
+hdss7-21
+hdss7-22
 
 [flannel]
-node03
-node04
+hdss7-21
+hdss7-22
 
 [ingress]
-node03
-node04
+hdss7-21
+hdss7-22
+
+[java]
+hdss7-11
+hdss7-12
+hdss7-21

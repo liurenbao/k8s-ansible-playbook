@@ -1,6 +1,6 @@
 ---
-
-- name: 安装etcd
+- name: 安装java环境
+  hosts: java
   remote_user: root
   roles:
-    - etcd
+    - jdk
