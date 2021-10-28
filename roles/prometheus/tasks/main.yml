@@ -1,0 +1,22 @@
+---
+#- name: 使用docker拉取kube-state-metrics:v1.5.0镜像
+#  shell: docker pull quay.io/coreos/kube-state-metrics:v1.5.0
+#
+#- name: 给kube-state-metrics镜像打标签
+#  shell: docker tag 91599517197a harbor.od.com/library/kube-state-metrics:v1.5.0
+#
+#- name: 上传kube-state-metrics镜像到harbor.od.com
+#  shell: docker push harbor.od.com/library/kube-state-metrics:v1.5.0
+
+- name: 创建kube-state-metrics资源配置清单目录
+  shell: mkdir -p /data/k8s-yaml/kube-state-metrics
+
+- name: 创建kube-state-metrics资源配置清单
+  template:
+    src: '{{ item }}.j2'
+    dest: /data/k8s-yaml/kube-state-metrics/{{ item }}
+    mode: 0644
+  with_items:
+    - rbac.yaml
+    - dp.yaml
+

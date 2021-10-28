@@ -1,6 +1,39 @@
 ---
-- name: 安装java环境
-  hosts: java
+#- name: 安装java环境
+#  hosts: java
+#  remote_user: root
+#  roles:
+#    - java
+
+#- name: 安装java环境
+#  hosts: zk
+#  remote_user: root
+#  roles:
+#    - zookeeper
+
+#- name: 安装java环境
+#  hosts: zk
+#  remote_user: root
+#  roles:
+#    - zookeeper
+
+#- name: 安装jenkins
+#  hosts: jenkins
+#  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - jenkins
+
+- name: 安装prometheus
+  hosts: monitor
+  gather_facts: no
   remote_user: root
   roles:
-    - jdk
+    - prometheus
+
+- name: 拉起镜像
+  hosts: node21
+  gather_facts: no
+  remote_user: root
+  roles:
+    - prometheus2

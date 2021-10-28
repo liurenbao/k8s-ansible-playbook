@@ -54,3 +54,17 @@ hdss7-22
 hdss7-11
 hdss7-12
 hdss7-21
+
+[zk]
+hdss7-11
+hdss7-12
+hdss7-21
+
+[jenkins]
+hdss7-200
+
+[monitor]
+hdss7-200
+
+[node21]
+hdss7-21
