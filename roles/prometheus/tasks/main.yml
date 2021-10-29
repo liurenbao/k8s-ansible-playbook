@@ -8,24 +8,147 @@
 #- name: 上传kube-state-metrics镜像到harbor.od.com
 #  shell: docker push harbor.od.com/library/kube-state-metrics:v1.5.0
 
-- name: 创建kube-state-metrics资源配置清单目录
-  shell: mkdir -p /data/k8s-yaml/kube-state-metrics
-  when: inventory_hostname == 'hdss7-200'
+#- name: 创建kube-state-metrics资源配置清单目录
+#  shell: mkdir -p /data/k8s-yaml/kube-state-metrics
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 创建kube-state-metrics资源配置清单
+#  template:
+#    src: '{{ item }}.j2'
+#    dest: /data/k8s-yaml/kube-state-metrics/{{ item }}
+#    mode: 0644
+#  with_items:
+#    - kube-state-metrics-rbac.yaml
+#    - kube-state-metrics-dp.yaml
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
+#  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
+#  when: inventory_hostname == 'hdss7-21'
+#
+#- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
+#  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
+#  when: inventory_hostname == 'hdss7-21'
 
-- name: 创建kube-state-metrics资源配置清单
+#- name: 使用docker拉取node-exporter:v0.15.0镜像，用来监控硬件资源
+#  shell: docker pull prom/node-exporter:v0.15.0
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 给kube-state-metrics镜像打标签
+#  shell: docker tag 12d51ffa2b22 harbor.od.com/library/node-exporter:v0.15.0
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 上传kube-state-metrics镜像到harbor.od.com
+#  shell: docker push harbor.od.com/library/node-exporter:v0.15.0
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 创建kube-state-metrics资源配置清单目录
+#  shell: mkdir -p /data/k8s-yaml/node-exporter
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 创建kube-state-metrics资源配置清单
+#  template:
+#    src: '{{ item }}.j2'
+#    dest: /data/k8s-yaml/node-exporter/{{ item }}
+#    mode: 0644
+#  with_items:
+#    - node-exporter-ds.yaml
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 使用kubectl apply -f node-exporter-ds.yaml
+#  shell: kubectl apply -f http://k8s-yaml.od.com/node-exporter/node-exporter-ds.yaml
+#  when: inventory_hostname == 'hdss7-21'
+
+#- name: 使用docker拉取cadvisor镜像，用来监控磁盘IO
+#  shell: docker pull google/cadvisor:v0.28.3
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 给cadvisor镜像打标签
+#  shell: docker tag 75f88e3ec333 harbor.od.com/library/cadvisor:v0.28.3
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 上传cadvisor镜像到harbor.od.com
+#  shell: docker push harbor.od.com/library/cadvisor:v0.28.3
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 创建cadvisor资源配置清单目录
+#  shell: mkdir -p /data/k8s-yaml/cadvisor
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 创建cadvisor资源配置清单
+#  template:
+#    src: '{{ item }}.j2'
+#    dest: /data/k8s-yaml/cadvisor/{{ item }}
+#    mode: 0644
+#  with_items:
+#    - cadivisor-ds.yaml
+#  when: inventory_hostname == 'hdss7-200'
+
+#- name: 修改所有运算节点的软链接
+#  shell: mount -o remount,rw /sys/fs/cgroup/
+#
+#- name: 制作软链接，容器中会用到cpu,cpuacct，因此我们做个软链接方便容器访问
+#  shell: ln -s /sys/fs/cgroup/cpu,cpuacct /sys/fs/cgroup/cpuacct,cpu
+#
+#- name: 使用kubectl apply -f cadvisor-ds.yaml
+#  shell: kubectl apply -f http://k8s-yaml.od.com/cadvisor/{{ item }}
+#  with_items:
+#    - cadivisor-ds.yaml
+#  when: inventory_hostname == 'hdss7-21'
+
+#- name: 使用docker拉取blackbox-exporter镜像，用来监控磁盘IO
+#  shell: docker pull prom/blackbox-exporter:v0.15.1
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 给cadvisor镜像打标签
+#  shell: docker tag 81b70b6158be harbor.od.com/library/blackbox-exporter:v0.15.1
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 上传cadvisor镜像到harbor.od.com
+#  shell: docker push harbor.od.com/library/blackbox-exporter:v0.15.1
+#  when: inventory_hostname == 'hdss7-200'
+#
+#- name: 创建blackbox-exporter资源配置清单目录
+#  shell: mkdir -p /data/k8s-yaml/blackbox-exporter
+#  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建blackbox-exporter资源配置清单
   template:
-    src: '{{ item }}.j2'
-    dest: /data/k8s-yaml/kube-state-metrics/{{ item }}
+    src: 'blackbox-exporter-{{ item }}.j2'
+    dest: /data/k8s-yaml/blackbox-exporter/{{ item }}
     mode: 0644
   with_items:
-    - rbac.yaml
+    - cm.yaml
     - dp.yaml
+    - ingress.yaml
+    - svc.yaml
   when: inventory_hostname == 'hdss7-200'
 
-- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
-  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
-  when: inventory_hostname == 'hdss7-21'
+#- name: 在7-11中添加blackbox-exporter记录
+#  lineinfile:
+#    dest: /var/named/od.com.zone
+#    regexp: '^blackbox'
+#    line: 'blackbox         A 10.4.7.10'
+#  when: inventory_hostname == 'hdss7-11'
+#
+#- name: 重启named
+#  shell: systemctl restart named
+#  when: inventory_hostname == 'hdss7-11'
+#
+#- name: 检查解析记录
+#  shell: dig -t A blackbox.od.com @192.168.0.2 +short
+#  when: inventory_hostname == 'hdss7-22'
+#  register: std_out
+#
+#- name: 查看验证DNS解析是否正常输出结果
+#  debug: msg={{ std_out.stdout_lines }}
+#  when: inventory_hostname == 'hdss7-22'
 
-- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
-  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
+- name: 使用kubectl apply -f blackbox-exporter资源
+  shell: kubectl apply -f http://k8s-yaml.od.com/blackbox-exporter/{{ item }}
+  with_items:
+    - cm.yaml
+    - dp.yaml
+    - svc.yaml
+    - ingress.yaml
   when: inventory_hostname == 'hdss7-21'

@@ -16,3 +16,10 @@
 Service discovery
 * kubernetes_sd：基于元数据的自动发现
 * file_sd：把自动发现规则写到文件中，基于文件的自动发现
+
+注意：
+```yaml
+  annotations:
+    # 这里必须传入一个字符串的1，如果不加引号会报错
+    deployment.kubernetes.io/revision: '1'
+```
