@@ -30,10 +30,3 @@
   remote_user: root
   roles:
     - prometheus
-
-- name: 拉起镜像
-  hosts: node21
-  gather_facts: no
-  remote_user: root
-  roles:
-    - prometheus2

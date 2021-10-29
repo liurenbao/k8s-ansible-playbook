@@ -10,6 +10,7 @@
 
 - name: 创建kube-state-metrics资源配置清单目录
   shell: mkdir -p /data/k8s-yaml/kube-state-metrics
+  when: inventory_hostname == 'hdss7-200'
 
 - name: 创建kube-state-metrics资源配置清单
   template:
@@ -19,4 +20,12 @@
   with_items:
     - rbac.yaml
     - dp.yaml
+  when: inventory_hostname == 'hdss7-200'
 
+- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
+  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
+  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
+  when: inventory_hostname == 'hdss7-21'
