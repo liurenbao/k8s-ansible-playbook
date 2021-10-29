@@ -1,6 +1,0 @@
----
-- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
-  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/rbac.yaml
-
-- name: 使用kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
-  shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/dp.yaml
