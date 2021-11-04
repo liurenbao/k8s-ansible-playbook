@@ -1,0 +1,6 @@
+---
+- name: 安装bind
+  hosts: '11'
+  remote_user: root
+  roles:
+    - bind
