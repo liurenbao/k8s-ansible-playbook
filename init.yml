@@ -1,0 +1,6 @@
+---
+- name: 初始化集群主机
+  hosts: nodes
+  remote_user: root
+  roles:
+    - init

@@ -1,229 +1,55 @@
 ---
-- hosts: nodes
-  user: root
-  tasks:
-#    - name: copy rsa.pub
-#      authorized_key: user=root key="{{ lookup('file', '/Users/liuhuan/.ssh/id_rsa.pub') }}"
-#      tags:
-#        - sshkey
+- name: copy rsa.pub
+  authorized_key: user=root key="{{ lookup('file', '{{ root_path }}/.ssh/id_rsa.pub') }}"
+  tags:
+    - sshkey
 
-#    - name: fetch copy # 将其它机器公钥拷贝到本机
-#      fetch: src=/root/.ssh/id_rsa.pub dest=/Users/liuhuan/Documents/Ansible/K8S/ssh
-#
-#    - name: append file authorized_keys.log # 公钥拼接成一个文件
-#      shell: find /Users/liuhuan/Documents/Ansible/K8S/ssh/* -type f -exec sh -c 'cat {}>>/Users/liuhuan/Documents/Ansible/K8S/ssh/authorized_keys.log' \;
-#      run_once: true
+##    - name: fetch copy # 将其它机器公钥拷贝到本机
+##      fetch: src=/root/.ssh/id_rsa.pub dest=/Users/liuhuan/Documents/Ansible/K8S/ssh
+##
+##    - name: append file authorized_keys.log # 公钥拼接成一个文件
+##      shell: find /Users/liuhuan/Documents/Ansible/K8S/ssh/* -type f -exec sh -c 'cat {}>>/Users/liuhuan/Documents/Ansible/K8S/ssh/authorized_keys.log' \;
+##      run_once: true
+##
+##    - name: copy hosts # 将处理好的公钥分发给各个机器上
+##      copy: src=./ssh/authorized_keys.log dest=/root/.ssh/authorized_keys mode=0600
 
-#    - name: copy hosts # 将处理好的公钥分发给各个机器上
-#      copy: src=./ssh/authorized_keys.log dest=/root/.ssh/authorized_keys mode=0600
+- name: disable selinux
+  copy:
+    src: ../packages/etc/selinux/config
+    dest: /etc/selinux/config
+    mode: 0644
 
-#    - name: disable selinux
-#      lineinfile:
-#        dest: /etc/selinux/config
-#        regexp: '^SELINUX'
-#        line: 'SELINUX=disabled'
+- name: stop firewalld
+  shell: systemctl stop firewalld && systemctl disable firewalld
 
-#    - name: stop firewalld
-#      shell: systemctl stop firewalld && systemctl disable firewalld
+- name: 设置时区为上海
+  shell: timedatectl set-timezone Asia/Shanghai
 
-#    - name: 设置时区为上海
-#      shell: timedatectl set-timezone Asia/Shanghai
+- name: install epal
+  shell: curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 
-#    - name: 重启服务器
-#      shell: reboot
+- name: 下载ntpdate
+  shell: yum -y install ntpdate
 
-#    - name: install epal
-#      shell: curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+- name: 时间同步
+  shell: ntpdate -u cn.ntp.org.cn
 
-#    - name: install tools
-#      shell: yum install wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
+- name: install tools
+  shell: yum install sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
 
 ## 主机和业务需要分开，但是主机上又跑了业务
 ## 因此需要设置主机域和业务域，能够将其关联起来
 ## 后期维护时，如果业务变更（从跑mysql服务变成跑redis服务，没有任何影响）
-#- hosts: '11'
-#  user: root
-#  tasks:
-#    - name: set host name
-#      shell: hostnamectl set-hostname hdss7-11.host.com
-#
-#- hosts: '12'
-#  user: root
-#  tasks:
-#    - name: set host name
-#      shell: hostnamectl set-hostname hdss7-12.host.com
-#
-#- hosts: '21'
-#  user: root
-#  tasks:
-#    - name: set host name
-#      shell: hostnamectl set-hostname hdss7-21.host.com
-#
-#- hosts: '22'
-#  user: root
-#  tasks:
-#    - name: set host name
-#      shell: hostnamectl set-hostname hdss7-22.host.com
-#
-#- hosts: '200'
-#  user: root
-#  tasks:
-#    - name: set host name
-#      shell: hostnamectl set-hostname hdss7-200.host.com
+- name: set host name
+  hostname:
+    name: "hdss7-{{ ansible_default_ipv4.address.split('.')[-1] }}.host.com"
 
-#- hosts: nodes
-#  user: root
-#  tasks:
-#    - name: 查看getenforce
-#      shell: getenforce
+- name: 修改DNS为7.11
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+    regexp: '^DNS1='
+    line: 'DNS1=10.4.7.11'
 
-#- hosts: '11'
-#  user: root
-#  tasks:
-#    - name: install bind, 用来自建DNS
-#      shell: yum install bind -y
-
-#    - name: edit named.conf
-#      copy: src=./packages/etc/named.conf dest=/etc/named.conf mode=0640
-
-#    - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
-#      shell: named-checkconf
-
-##   不能加空格
-##   - name: echo zone content to named.zone file
-##      blockinfile:
-##        dest=/etc/named.rfc1912.zones
-##        backup=yes
-##        content="
-##        zone "host.com" IN {\n
-##                type  master;\n
-##                file  "host.com.zone";\n
-##                allow-update { 10.4.7.11; };\n
-##        };\n
-##
-##        zone "od.com" IN {\n
-##                type  master;\n
-##                file  "od.com.zone";\n
-##                allow-update { 10.4.7.11; };\n
-##        };\n
-##        "
-
-#      - name: edit named.conf
-#        copy: src=./packages/etc/named.rfc1912.zones dest=/etc/named.rfc1912.zones mode=0640
-
-#      - name: edit /vars/named/host.com.zone file
-#        copy: src=./packages/vars/named/host.com.zone dest=/vars/named/host.com.zone mode=0644
-#
-#      - name: edit /vars/named/host.com.zone file
-#        copy: src=./packages/vars/named/od.com.zone dest=/vars/named/od.com.zone mode=0644
-#
-#      - name: check named server 想要查看输出内容，在命令后加上 -vv 参数
-#        shell: named-checkconf
-
-#      - name: 启动named服务并设置为开机自启动 想要查看输出内容，在命令后加上 -vv 参数
-#        shell: systemctl start named && systemctl enable named
-#
-#      - name: check dig record
-#        shell: dig -t A hdss7-21.host.com @10.4.7.11 +short
-
-#- hosts: nodes
-#  user: root
-#  tasks:
-#    - name: 修改DNS为7.11
-#      lineinfile:
-#        dest: /etc/sysconfig/network-scripts/ifcfg-eth0
-#        regexp: '^DNS1=223.5.5.5'
-#        line: 'DNS1=10.4.7.11'
-#
-#    - name: 重启网卡
-#      shell: systemctl restart network
-
-#- hosts: '200'
-#  user: root
-#  tasks:
-##      使用wget会因为网络原因导致下载失败，因此已经在template中提供
-##    - name: 安装cfssl证书
-##      shell: wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -O /usr/bin/cfssl
-##
-##    - name: 安装cfssl证书
-##      shell: wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -O /usr/bin/cfssl-json
-##
-##    - name: 安装cfssl证书
-##      shell: wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -O /usr/bin/cfssl-certinfo
-
-#    - name: 安装cfssl证书
-#      copy: src=./packages/usr/bin/cfssl_linux-amd64 dest=/usr/bin/cfssl mode=0755
-#
-#    - name: 安装cfssl证书
-#      copy: src=./packages/usr/bin/cfssljson_linux-amd64 dest=/usr/bin/cfssl-json mode=0755
-#
-#    - name: 安装cfssl证书
-#      copy: src=./packages/usr/bin/cfssl-certinfo_linux-amd64 dest=/usr/bin/cfssl-certinfo mode=0755
-
-#    - name: 创建certs目录
-#      shell: mkdir -p /opt/certs
-#
-#    - name: 手撕ca-csr.json文件
-#      copy: src=./packages/opt/certs/ca-csr.json dest=/opt/certs/ca-csr.json mode=0644
-
-#    - name: 手撕证书命令
-#      shell:
-#        # 必须使用cfssl-json将证书输出为承载式证书，而不是输出到终端
-#        cmd: cfssl gencert -initca /opt/certs/ca-csr.json | cfssl-json -bare ca
-#        # 该命令必须在指定目录执行，因此需要使用chdir参数来指定目录
-#        chdir: /opt/certs
-
-#- hosts: docker
-#  user: root
-#  tasks:
-##      可能会因为网络原因下载安装失败，不推荐使用
-##    - name: 删除本地源
-##      shell: rm -rf /etc/yum.repos.d/local.repo
-##
-##    - name: 安装docker
-##      shell: cfssl gencert -initca ca-csr.json | cfssl-json -bare ca
-
-#    - name: 安装docker源，推荐使用下面的安装方式
-#      shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-#
-#    - name: 安装docker
-#      shell: yum install docker -y
-
-#    - name: 创建docker相关目录
-#      shell: mkdir -p /etc/docker /data/docker
-#
-#    - name: 编辑/etc/docker/daemon.json文件
-#      copy: src=./packages/etc/docker/daemon.json dest=/etc/docker/daemon.json mode=0644
-
-#- hosts: '21'
-#  user: root
-#  tasks:
-#    - name: 修改'21'主机daemon.json中的bip信息
-#      lineinfile:
-#        dest: /etc/docker/daemon.json
-#        regexp: '^(.*)"bip'
-#        line: '  "bip": "172.7.21.1/24",'
-#
-#- hosts: '22'
-#  user: root
-#  tasks:
-#    - name: 修改'22'主机daemon.json中的bip信息
-#      lineinfile:
-#        dest: /etc/docker/daemon.json
-#        regexp: '^(.*)"bip'
-#        line: '  "bip": "172.7.22.1/24",'
-#
-#- hosts: '200'
-#  user: root
-#  tasks:
-#    - name: 修改'200'主机daemon.json中的bip信息
-#      lineinfile:
-#        dest: /etc/docker/daemon.json
-#        regexp: '^(.*)"bip'
-#        line: '  "bip": "172.7.200.1/24",'
-#
-#- hosts: docker
-#  user: root
-#  tasks:
-#    - name: 启动docker并设置开机自启
-#      shell: systemctl restart docker && systemctl enable docker
+- name: 重启机器
+  shell: reboot
