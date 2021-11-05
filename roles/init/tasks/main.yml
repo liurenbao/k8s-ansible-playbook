@@ -86,7 +86,7 @@
   shell: dig -t A hdss7-21.host.com @10.4.7.11 +short
   register: std_out
 
-- name: 查看已有的postrouting规则输出结果
+- name: 查看check dig record输出结果
   debug: msg={{ std_out.stdout_lines }}
 
 - name: 修改DNS为7.11
