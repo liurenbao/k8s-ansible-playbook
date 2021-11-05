@@ -10,13 +10,21 @@
 
 - name: 上传cfssl相关执行工具
   copy:
-    src: "{{ item }}"
-    dest: "/usr/bin/{{ item }}"
+    src: cfssl_linux-amd64
+    dest: /usr/bin/cfssl
     mode: 0755
-  with_items:
-    - cfssl_linux-amd64
-    - cfssljson_linux-amd64
-    - cfssl-certinfo_linux-amd64
+
+- name: 上传cfssl相关执行工具
+  copy:
+    src: cfssljson_linux-amd64
+    dest: /usr/bin/cfssl-json
+    mode: 0755
+
+- name: 上传cfssl相关执行工具
+  copy:
+    src: cfssl-certinfo_linux-amd64
+    dest: /usr/bin/cfssl-certinfo
+    mode: 0755
 
 - name: 创建certs目录
   shell: mkdir -p /opt/certs
