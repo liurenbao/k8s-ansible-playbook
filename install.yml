@@ -10,6 +10,7 @@
   gather_facts: no
   remote_user: root
   roles:
+    - cert
     - harbor
 
 - name: 在7-11增加记录
