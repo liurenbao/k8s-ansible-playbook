@@ -2,7 +2,7 @@
 #- hosts: '200'
 
 - name: 下载harbor
-  copy: src=../packages/src/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
+  copy: src=../../../src/harbor-offline-installer-v2.2.2.tgz dest=/opt mode=0644
 
 - name: 解压
   shell: tar xf /opt/harbor-offline-installer-v2.2.2.tgz -C /opt/
