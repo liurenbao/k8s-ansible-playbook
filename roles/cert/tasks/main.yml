@@ -22,7 +22,7 @@
   shell: mkdir -p /opt/certs
 
 - name: 手撕ca-csr.json文件
-  copy:
+  template:
     src: ca-csr.json.j2
     dest: /opt/certs/ca-csr.json
     mode: 0644
