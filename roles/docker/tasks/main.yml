@@ -1,0 +1,25 @@
+
+#      可能会因为网络原因下载安装失败，不推荐使用
+#    - name: 删除本地源
+#      shell: rm -rf /etc/yum.repos.d/local.repo
+#
+#    - name: 安装docker
+#      shell: cfssl gencert -initca ca-csr.json | cfssl-json -bare ca
+
+- name: 安装docker源，推荐使用yum-config-manager --add-repo安装方式
+  shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+- name: 安装docker
+  shell: yum install docker-ce -y
+
+- name: 创建docker相关目录
+  shell: mkdir -p /etc/docker /data/docker
+
+- name: 编辑/etc/docker/daemon.json文件
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: 0644
+
+- name: 启动docker并设置开机自启
+  shell: systemctl restart docker && systemctl enable docker
