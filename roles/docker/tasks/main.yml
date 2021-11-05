@@ -6,6 +6,9 @@
 #    - name: 安装docker
 #      shell: cfssl gencert -initca ca-csr.json | cfssl-json -bare ca
 
+- name: 安装yum utils
+  shell: yum -y install yum-utils
+
 - name: 安装docker源，推荐使用yum-config-manager --add-repo安装方式
   shell: yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 
