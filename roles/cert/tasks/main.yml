@@ -11,7 +11,7 @@
 - name: 上传cfssl相关执行工具
   copy:
     src: "{{ item }}"
-    dest: /usr/bin/cfssl
+    dest: "/usr/bin/{{ item }}"
     mode: 0755
   with_items:
     - cfssl_linux-amd64
