@@ -16,8 +16,8 @@
   shell: ln -s /opt/harbor-v2.2.2 /opt/harbor
 
 - name: 复制harbor.yml
-  copy:
-    src: ../packages/opt/harbor/harbor.yml
+  template:
+    src: harbor.yml.j2
     dest: /opt/harbor/harbor.yml
     mode: 0644
 
