@@ -1,6 +1,20 @@
 ---
-- name: 安装docker
-  hosts: docker
+#- name: 安装docker
+#  hosts: docker
+#  remote_user: root
+#  roles:
+#    - docker
+
+- name: 安装harbor
+  hosts: '200'
+  gather_facts: no
   remote_user: root
   roles:
-    - docker
+    - harbor
+
+- name: 在7-11增加记录
+  hosts: '11'
+  gather_facts: no
+  remote_user: root
+  roles:
+    - named
