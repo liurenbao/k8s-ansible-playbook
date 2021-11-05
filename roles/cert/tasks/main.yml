@@ -1,0 +1,35 @@
+##      使用wget会因为网络原因导致下载失败，因此已经在packages中提供
+##    - name: 安装cfssl证书
+##      shell: wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -O /usr/bin/cfssl
+##
+##    - name: 安装cfssl证书
+##      shell: wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -O /usr/bin/cfssl-json
+##
+##    - name: 安装cfssl证书
+##      shell: wget https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64 -O /usr/bin/cfssl-certinfo
+
+- name: 上传cfssl相关执行工具
+  copy:
+    src: {{ item }}
+    dest: /usr/bin/cfssl
+    mode: 0755
+  with_items:
+    - cfssl_linux-amd64
+    - cfssljson_linux-amd64
+    - cfssl-certinfo_linux-amd64
+
+- name: 创建certs目录
+  shell: mkdir -p /opt/certs
+
+- name: 手撕ca-csr.json文件
+  copy:
+    src: ca-csr.json.j2
+    dest: /opt/certs/ca-csr.json
+    mode: 0644
+
+- name: 手撕证书命令
+  shell:
+    # 必须使用cfssl-json将证书输出为承载式证书，而不是输出到终端
+    cmd: cfssl gencert -initca /opt/certs/ca-csr.json | cfssl-json -bare ca
+    # 该命令必须在指定目录执行，因此需要使用chdir参数来指定目录
+    chdir: /opt/certs
