@@ -46,53 +46,11 @@
   hostname:
     name: "hdss7-{{ ansible_default_ipv4.address.split('.')[-1] }}.host.com"
 
-- name: install bind, 用来自建DNS
-  shell: yum -y install bind
-  when: inventory_hostname == 'hdss7-21'
-
-- name: 上传named conf等文件到/etc目录下
-  template:
-    src: '{{ item }}.j2'
-    dest: /etc/{{ item }}
-    mode: 0644
-  with_items:
-    - named.rfc1912.zones
-    - named.conf
-  when: inventory_hostname == 'hdss7-21'
-
-- name: 上传zone文件到/vars/named/
-  template:
-    src: '{{ item }}.j2'
-    dest: /var/named/{{ item }}
-    mode: 0644
-  with_items:
-    - od.com.zone
-    - host.com.zone
-  when: inventory_hostname == 'hdss7-21'
-
-- name: check named server
-  shell: named-checkconf
-  when: inventory_hostname == 'hdss7-21'
-
-- name: 启动named服务并设置为开机自启动
-  shell: systemctl start named && systemctl enable named
-  when: inventory_hostname == 'hdss7-21'
-
 - name: 修改DNS为7.11
   lineinfile:
     dest: /etc/sysconfig/network-scripts/ifcfg-eth0
     regexp: '^DNS1='
     line: 'DNS1=10.4.7.11'
-
-- name: 启动named服务并设置为开机自启动
-  shell: systemctl restart network
-
-- name: check dig record
-  shell: dig -t A hdss7-21.host.com @10.4.7.11 +short
-  register: std_out
-
-- name: 查看已有的postrouting规则输出结果
-  debug: msg={{ std_out.stdout_lines }}
 
 - name: 重启机器
   shell: reboot

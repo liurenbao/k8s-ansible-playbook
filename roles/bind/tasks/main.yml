@@ -44,6 +44,10 @@
 
 - name: 启动named服务并设置为开机自启动
   shell: systemctl start named && systemctl enable named
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 重启network
+  shell: systemctl restart network
 
 - name: check dig record
   shell: dig -t A hdss7-21.host.com @10.4.7.11 +short
