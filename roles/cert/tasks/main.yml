@@ -10,7 +10,7 @@
 
 - name: 上传cfssl相关执行工具
   copy:
-    src: {{ item }}
+    src: "{{ item }}"
     dest: /usr/bin/cfssl
     mode: 0755
   with_items:
