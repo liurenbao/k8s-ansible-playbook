@@ -28,7 +28,7 @@
 
 - name: 安装etcd
   hosts: etcd
-  gather_facts: no
+#  gather_facts: no
   remote_user: root
   roles:
     - etcd
