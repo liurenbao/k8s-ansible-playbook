@@ -41,3 +41,20 @@
     cmd: cfssl gencert -initca /opt/certs/ca-csr.json | cfssl-json -bare ca
     # 该命令必须在指定目录执行，因此需要使用chdir参数来指定目录
     chdir: /opt/certs
+
+- name: 创建etcd基于根证书的ca-config文件，因为etcd也是需要通过ssl通信的
+  copy:
+    src: ca-config.json.j2
+    dest: /opt/certs/ca-config.json
+    mode: 0644
+
+- name: 创建etcd基于根证书的etcd-peer-csr文件
+  copy:
+    src: etcd-peer-csr.json.j2
+    dest: /opt/certs/etcd-peer-csr.json
+    mode: 0644
+
+- name: 生成etcd ca证书文件
+  shell:
+    cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer etcd-peer-csr.json | cfssl-json -bare etcd-peer
+    chdir: /opt/certs
