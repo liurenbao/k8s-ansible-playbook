@@ -51,7 +51,7 @@
   shell: systemctl start supervisord && systemctl enable supervisord
 
 - name: 创建etcd-server的启动配置
-  copy:
+  template:
     src: etcd-server.ini.j2
     dest: /etc/supervisord.d/etcd-server.ini
     mode: 0644
