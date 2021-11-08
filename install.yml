@@ -5,17 +5,30 @@
 #  roles:
 #    - docker
 
-- name: 安装harbor
+- name: 部署证书
   hosts: '200'
   gather_facts: no
   remote_user: root
   roles:
     - cert
-    - harbor
 
-- name: 在7-11增加记录
-  hosts: '11'
+#- name: 安装harbor
+#  hosts: '200'
+#  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - cert
+
+#- name: 在7-11增加记录
+#  hosts: '11'
+#  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - named
+
+- name: 安装etcd
+  hosts: etcd
   gather_facts: no
   remote_user: root
   roles:
-    - named
+    - etcd
