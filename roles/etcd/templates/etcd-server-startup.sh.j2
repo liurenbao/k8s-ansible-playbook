@@ -1,7 +1,7 @@
 #!/bin/sh
-./etcd --name etcd-server-7-12 \
+./etcd --name etcd-server-7-"{{ last_num_of_ip }}" \
        --data-dir /data/etcd/etcd-server \
-       --listen-peer-urls https://{{ etcd_ip }}:2380 \
+       --listen-peer-urls https://"{{ etcd_ip }}":2380 \
        --listen-client-urls https://"{{ ansible_default_ipv4.address }}":2379,http://127.0.0.1:2379 \
        --quota-backend-bytes 8000000000 \
        --initial-advertise-peer-urls https://"{{ ansible_default_ipv4.address }}":2380 \
