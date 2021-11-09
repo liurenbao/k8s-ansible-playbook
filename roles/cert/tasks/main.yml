@@ -58,3 +58,25 @@
   shell:
     cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=peer etcd-peer-csr.json | cfssl-json -bare etcd-peer
     chdir: /opt/certs
+
+- name: 创建生成client证书签名的JSON配置文件，/opt/certs/client-csr.json
+  template:
+    src: client-csr.json.j2
+    dest: /opt/certs/client-csr.json
+    mode: 0644
+
+- name: 生成client证书文件，/opt/certs/client-csr.json
+  shell:
+    cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client client-csr.json | cfssl-json -bare client
+    chdir: /opt/certs
+
+- name: 给apiserver创建json配置文件
+  template:
+    src: apiserver-csr.json.j2
+    dest: /opt/certs/apiserver-csr.json
+    mode: 0644
+
+- name: 生成apiserver证书文件，/opt/certs/apiserver-csr.json
+  shell:
+    cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server apiserver-csr.json | cfssl-json -bare apiserver
+    chdir: /opt/certs
