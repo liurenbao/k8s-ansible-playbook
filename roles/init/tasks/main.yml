@@ -37,7 +37,7 @@
   shell: ntpdate -u cn.ntp.org.cn
 
 - name: install tools
-  shell: yum install sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils -y
+  shell: yum install -y sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils
 
 ## 主机和业务需要分开，但是主机上又跑了业务
 ## 因此需要设置主机域和业务域，能够将其关联起来
@@ -83,7 +83,7 @@
   when: inventory_hostname == 'hdss7-11'
 
 - name: check dig record
-  shell: dig -t A hdss7-21.host.com @10.4.7.11 +short
+  shell: dig -t A hdss7-21.host.com @"{{ node11 }}" +short
   register: std_out
 
 - name: 查看check dig record输出结果
@@ -93,7 +93,7 @@
   lineinfile:
     dest: /etc/sysconfig/network-scripts/ifcfg-eth0
     regexp: '^DNS1='
-    line: 'DNS1=10.4.7.11'
+    line: 'DNS1="{{ node 11 }}"'
 
 - name: 重启network
   shell: systemctl restart network
