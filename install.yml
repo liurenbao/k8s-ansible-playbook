@@ -26,9 +26,16 @@
 #  roles:
 #    - named
 
-- name: 安装etcd
-  hosts: etcd
+#- name: 安装etcd
+#  hosts: etcd
+##  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - etcd
+
+- name: 部署k8s node节点
+  hosts: k8s-node
 #  gather_facts: no
   remote_user: root
   roles:
-    - etcd
+    - apiserver
