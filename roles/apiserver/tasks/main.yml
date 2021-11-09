@@ -54,7 +54,6 @@
 - name: 创建apiserver相关目录
   shell: mkdir -p /data/logs/kubernetes/kube-apiserver
 
-tasks:
 - name: 使用supervisorctl启动API server
   shell: supervisorctl update
 
