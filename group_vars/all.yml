@@ -4,3 +4,10 @@ root_path: /Users/liuhuan
 
 # Linux
 # root_path: /root
+
+node11: 10.4.7.11
+node12: 10.4.7.12
+node21: 10.4.7.21
+node22: 10.4.7.22
+node200: 10.4.7.200
+gateway: 10.4.7.2
