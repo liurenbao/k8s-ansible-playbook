@@ -1,0 +1,62 @@
+---
+- name: 下载k8s安装包, 版本是1.17.2，我这里是提前下载下来的
+  copy:
+    src: ../../../src/kubernetes-server-linux-amd64-v1.17.2.tar.gz
+    dest: /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz
+    mode: 0644
+
+- name: 解压k8s安装包
+  shell:  tar xf /opt/src/kubernetes-server-linux-amd64-v1.17.2.tar.gz -C /opt
+
+- name: 重命名kubernetes
+  shell: mv /opt/kubernetes /opt/kubernetes-v1.17.2
+
+- name: 制作kubenetes软链接
+  shell: ln -s /opt/kubernetes-v1.17.2 /opt/kubernetes
+
+- name: 删除k8s中的源码tar包，docker的镜像，tag包
+  shell: rm -rf /opt/kubernetes/"{{ item }}"
+  with_items:
+    - kubernetes-src.tar.gz
+    - server/bin/*.tar
+    - server/bin/*_tag
+
+- name: 在k8s机器上创建cert目录
+  shell: mkdir -p /opt/kubernetes/server/bin/cert
+
+- name: 将运维主机上的证书拷贝到k8s节点上
+  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/*.pem /opt/kubernetes/server/bin/cert
+
+- name: 将etcd证书删除
+  shell: rm -rf /opt/kubernetes/server/bin/cert/etcd*
+
+- name: 在k8s机器上安装conf文件
+  shell: mkdir -p /opt/kubernetes/server/bin/conf
+
+- name: 编辑k8s机器上的audit.yaml文件，这是k8s配置清单，用来做审计用的
+  template:
+    src: audit.yaml.j2
+    dest: /opt/kubernetes/server/bin/conf/audit.yaml
+    mode: 0644
+
+- name: 编辑apiserver启动脚本
+  template:
+    src: kube-apiserver.sh.j2
+    dest: /opt/kubernetes/server/bin/kube-apiserver.sh
+    mode: 0755
+
+- name: 创建apiserver ini配置文件
+  template:
+    src: kube-apiserver.ini.j2
+    dest: /etc/supervisord.d/kube-apiserver.ini
+    mode: 0644
+
+- name: 创建apiserver相关目录
+  shell: mkdir -p /data/logs/kubernetes/kube-apiserver
+
+tasks:
+- name: 使用supervisorctl启动API server
+  shell: supervisorctl update
+
+#    - name: 等待supervisor启动，需要等待20秒左右
+#      pause: seconds=20
