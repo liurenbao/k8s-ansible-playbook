@@ -22,3 +22,6 @@
     dest: /etc/keepalived/keepalived.conf
     mode: 0644
   when: inventory_hostname == 'hdss7-12'
+
+- name: 设置keepalived开机自启动
+  shell: systemctl enable keepalived && systemctl start keepalived
