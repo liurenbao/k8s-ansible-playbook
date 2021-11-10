@@ -39,3 +39,10 @@
   remote_user: root
   roles:
     - apiserver
+
+- name: 安装nginx
+  hosts: nginx
+#  gather_facts: no
+  remote_user: root
+  roles:
+    - nginx
