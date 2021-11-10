@@ -57,5 +57,5 @@
 - name: 使用supervisorctl启动API server
   shell: supervisorctl update
 
-#    - name: 等待supervisor启动，需要等待20秒左右
-#      pause: seconds=20
+- name: 等待supervisor启动，视硬件而定
+  pause: seconds=30
