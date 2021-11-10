@@ -38,6 +38,10 @@ hdss7-22
 hdss7-11
 hdss7-12
 
+[keepalived]
+hdss7-11
+hdss7-12
+
 [kube-proxy]
 hdss7-21
 hdss7-22

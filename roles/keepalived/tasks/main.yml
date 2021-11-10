@@ -1,0 +1,24 @@
+---
+- name: 下载keepalived
+  shell: yum -y install keepalived
+
+- name: 编辑keepalived检查端口脚本
+  template:
+    src: check_port.sh.j2
+    dest: /etc/keepalived/check_port.sh
+    mode: 0755
+
+- name: 编辑keepalived主节点配置文件
+  template:
+    src: keepalived.conf_master.j2
+    dest: /etc/keepalived/keepalived.conf
+    mode: 0644
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 编辑keepalived从节点配置文件
+  template:
+    # nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主节点恢复正常以后，vip再次回到主节点
+    src: keepalived.conf_child.j2
+    dest: /etc/keepalived/keepalived.conf
+    mode: 0644
+  when: inventory_hostname == 'hdss7-12'

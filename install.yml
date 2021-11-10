@@ -4,14 +4,14 @@
 #  remote_user: root
 #  roles:
 #    - docker
-
-- name: 部署证书
-  hosts: '200'
-  gather_facts: no
-  remote_user: root
-  roles:
-    - cert
-
+#
+#- name: 部署证书
+#  hosts: '200'
+#  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - cert
+#
 #- name: 安装harbor
 #  hosts: '200'
 #  gather_facts: no
@@ -26,23 +26,30 @@
 #  roles:
 #    - named
 
-- name: 安装etcd
-  hosts: etcd
-#  gather_facts: no
-  remote_user: root
-  roles:
-    - etcd
+#- name: 安装etcd
+#  hosts: etcd
+##  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - etcd
+#
+#- name: 部署k8s node节点
+#  hosts: k8s-node
+##  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - apiserver
+#
+#- name: 安装nginx
+#  hosts: nginx
+##  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - nginx
 
-- name: 部署k8s node节点
-  hosts: k8s-node
+- name: 安装keepalived
+  hosts: keepalived
 #  gather_facts: no
   remote_user: root
   roles:
-    - apiserver
-
-- name: 安装nginx
-  hosts: nginx
-#  gather_facts: no
-  remote_user: root
-  roles:
-    - nginx
+    - keepalived
