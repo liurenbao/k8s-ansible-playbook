@@ -11,3 +11,5 @@ node21: 10.4.7.21
 node22: 10.4.7.22
 node200: 10.4.7.200
 gateway: 10.4.7.2
+
+virtual_ipaddress: 10.4.7.10
