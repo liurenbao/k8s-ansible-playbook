@@ -61,3 +61,6 @@
 
 - name: 执行supervisorctl update命令，启动etcd服务
   shell: supervisorctl update
+
+- name: 等待etcd服务启动，视硬件而定，固态硬盘会快一点，机械硬盘就比较慢
+  pause: seconds=30
