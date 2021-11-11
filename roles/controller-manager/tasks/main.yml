@@ -1,0 +1,17 @@
+---
+- name: 创建kube-controller-manager.sh脚本
+  template:
+    src: kube-controller-manager.sh.j2
+    dest: /opt/kubernetes/server/bin/kube-controller-manager.sh
+    mode: 0755
+
+- name: 创建kube-controller-manager相关目录
+  shell: mkdir -p /data/logs/kubernetes/kube-controller-manager
+
+- name: 创建kube-conntroller-manager.ini文件
+  template:
+    src: kube-conntroller-manager.ini.j2
+    dest: /etc/supervisord.d/kube-conntroller-manager.ini
+
+- name: 使用supervisorctl启动controller manager
+  shell: supervisorctl update

@@ -32,14 +32,7 @@
 #  remote_user: root
 #  roles:
 #    - etcd
-#
-#- name: 部署k8s node节点
-#  hosts: k8s-node
-##  gather_facts: no
-#  remote_user: root
-#  roles:
-#    - apiserver
-#
+
 #- name: 安装nginx
 #  hosts: nginx
 ##  gather_facts: no
@@ -47,9 +40,18 @@
 #  roles:
 #    - nginx
 
-- name: 安装keepalived
-  hosts: keepalived
+#- name: 安装keepalived
+#  hosts: keepalived
+##  gather_facts: no
+#  remote_user: root
+#  roles:
+#    - keepalived
+
+- name: 部署k8s node节点
+  hosts: k8s-node
 #  gather_facts: no
   remote_user: root
   roles:
-    - keepalived
+#    - apiserver
+    - controller-manager
+    - scheduler
