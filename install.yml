@@ -12,12 +12,12 @@
 #  roles:
 #    - cert
 #
-#- name: 安装harbor
-#  hosts: '200'
-#  gather_facts: no
-#  remote_user: root
-#  roles:
-#    - cert
+- name: 安装harbor
+  hosts: '200'
+  gather_facts: no
+  remote_user: root
+  roles:
+    - cert
 
 #- name: 在7-11增加记录
 #  hosts: '11'
@@ -53,5 +53,6 @@
   remote_user: root
   roles:
 #    - apiserver
-    - controller-manager
-    - scheduler
+#    - controller-manager
+#    - scheduler
+    - kubelet

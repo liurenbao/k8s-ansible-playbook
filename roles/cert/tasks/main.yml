@@ -80,3 +80,14 @@
   shell:
     cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server apiserver-csr.json | cfssl-json -bare apiserver
     chdir: /opt/certs
+
+- name: 上传kubelet-csr.json文件，可以在里面加以后有可能会成为k8s node节点的IP，方便扩容，否则以后添加要重新生成证书文件
+  template:
+    src: kubelet-csr.json.j2
+    dest: /opt/certs/kubelet-csr.json
+    mode: 0644
+
+- name: 手撕kubelet相关证书
+  shell:
+    cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server kubelet-csr.json | cfssl-json -bare kubelet
+    chdir: /opt/certs
