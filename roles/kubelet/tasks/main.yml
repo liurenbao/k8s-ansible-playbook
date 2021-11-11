@@ -1,6 +1,6 @@
 ---
 - name: 拷贝kubelet证书到k8s节点上
-  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@10.4.7.200:/opt/certs/kubelet*.pem /opt/kubernetes/server/bin/cert
+  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/kubelet*.pem /opt/kubernetes/server/bin/cert
 
 - name: kubelet配置ca证书命令
   shell:
