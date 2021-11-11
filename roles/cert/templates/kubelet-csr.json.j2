@@ -1,0 +1,23 @@
+{
+    "CN": "k8s-kubelet",
+    "hosts": [
+    "127.0.0.1",
+    "{{ virtual_ipaddress }}",
+    "{{ node21 }}",
+    "{{ node22 }}"
+
+    ],
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "CN",
+            "ST": "beijing",
+            "L": "beijing",
+            "O": "od",
+            "OU": "ops"
+        }
+    ]
+}
