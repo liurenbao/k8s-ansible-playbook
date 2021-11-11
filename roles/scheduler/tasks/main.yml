@@ -1,0 +1,31 @@
+---
+- name: 创建kube-scheduler.sh脚本
+  template:
+    src: kube-scheduler.sh.j2
+    dest: /opt/kubernetes/server/bin/kube-scheduler.sh
+    mode: 0755
+
+- name: 创建schedule相关目录
+  shell: mkdir -p /data/logs/kubernetes/kube-scheduler
+
+- name: 创建kube-schedule.ini配置文件
+  template:
+    src: kube-scheduler.ini.j2
+    dest: /etc/supervisord.d/kube-scheduler.ini
+    mode: 0644
+
+- name: 使用supervisorctl启动kube scheduler
+  shell: supervisorctl update
+
+##- name: 等待kube scheduler启动，需要等待20秒左右
+##  pause: seconds=20
+
+- name: 设置kubectl软链接
+  shell: ln -s /opt/kubernetes/server/bin/kubectl /usr/bin/kubectl
+
+- name: 使用kubectl检查集群健康状态
+  shell: kubectl get cs
+  register: std_out
+
+- name: 查看集群健康状态输出
+  debug: msg={{ std_out.stdout_lines }}
