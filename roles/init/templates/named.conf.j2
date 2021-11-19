@@ -10,7 +10,7 @@
 // configuration located in /usr/share/doc/bind-{version}/Bv9ARM.html
 
 options {
-	listen-on port 53 { "{{ node11 }}"; };
+	listen-on port 53 { {{ node11 }}; };
 	directory 	"/var/named";
 	dump-file 	"/var/named/data/cache_dump.db";
 	statistics-file "/var/named/data/named_stats.txt";
@@ -18,7 +18,7 @@ options {
 	recursing-file  "/var/named/data/named.recursing";
 	secroots-file   "/var/named/data/named.secroots";
 	allow-query     { any; };
-    forwarders      { "{{ gateway }}"; };
+    forwarders      { {{ gateway }}; };
 	/*
 	 - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
 	 - If you are building a RECURSIVE (caching) DNS server, you need to enable
