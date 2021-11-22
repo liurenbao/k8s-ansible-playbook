@@ -3,7 +3,7 @@
   lineinfile:
     dest: /var/named/od.com.zone
     regexp: '^harbor'
-    line: 'harbor           A "{{ node200 }}"'
+    line: 'harbor           A {{ node200 }}'
 
 - name: 重启named
   shell: systemctl restart named
