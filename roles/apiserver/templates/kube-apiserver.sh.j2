@@ -10,7 +10,7 @@
   --etcd-cafile ./cert/ca.pem \
   --etcd-certfile ./cert/client.pem \
   --etcd-keyfile ./cert/client-key.pem \
-  --etcd-servers https://"{{ node12 }}":2379,https://"{{ node21 }}":2379,https://"{{ node22 }}":2379 \
+  --etcd-servers https://{{ node12 }}:2379,https://{{ node21 }}:2379,https://{{ node22 }}:2379 \
   --service-account-key-file ./cert/ca-key.pem \
   --service-cluster-ip-range 192.168.0.0/16 \
   --service-node-port-range 3000-29999 \

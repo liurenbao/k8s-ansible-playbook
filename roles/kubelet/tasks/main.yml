@@ -83,7 +83,7 @@
   shell: supervisorctl update
 
 - name: 等待kubelet启动
-  pause: seconds=30
+  pause: seconds=240
 
   # 假如在生产环境，需要把主控节点和运算节点物理分开部署，
   # 如果不想让主控节点去运行业务节点，那么标签选择器的作用就体现了
