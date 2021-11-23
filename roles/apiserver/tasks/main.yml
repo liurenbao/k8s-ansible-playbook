@@ -27,9 +27,6 @@
 - name: 将运维主机上的证书拷贝到k8s节点上
   shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/*.pem /opt/kubernetes/server/bin/cert
 
-- name: 将etcd证书删除
-  shell: rm -rf /opt/kubernetes/server/bin/cert/etcd*
-
 - name: 在k8s机器上安装conf文件
   shell: mkdir -p /opt/kubernetes/server/bin/conf
 
