@@ -1,7 +1,7 @@
 ! Configuration File for keepalived
 
 global_defs {
-	router_id "{{ node11 }}"
+	router_id {{ node12 }}
 }
 
 vrrp_script chk_nginx {
@@ -14,7 +14,7 @@ vrrp_instance VI_1 {
 	state BACKUP
 	interface eth0
 	virtual_router_id 251
-	mcast_src_ip "{{ node11 }}"
+	mcast_src_ip {{ node12 }}
 	priority 90
 	advert_int 1
 
@@ -28,6 +28,6 @@ vrrp_instance VI_1 {
 	}
 
 	virtual_ipaddress {
-		"{{ virtual_ipaddress }}"
+		{{ virtual_ipaddress }}
 	}
 }
