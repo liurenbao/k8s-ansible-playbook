@@ -4,7 +4,7 @@
 
 - name: kubelet配置ca证书命令
   shell:
-    cmd: kubectl config set-cluster myk8s --certificate-authority=/opt/kubernetes/server/bin/cert/ca.pem --embed-certs=true --server=https://"{{ virtual_ipaddress }}":7443 --kubeconfig=kubelet.kubeconfig
+    cmd: kubectl config set-cluster myk8s --certificate-authority=/opt/kubernetes/server/bin/cert/ca.pem --embed-certs=true --server=https://{{ virtual_ipaddress }}:7443 --kubeconfig=kubelet.kubeconfig
     chdir: /opt/kubernetes/server/bin/conf
 
   # server和client可以相互通信，因为client证书和server证书是基于一套ca证书签发的
@@ -33,6 +33,8 @@
 - name: 使用kubectl create创建资源
   shell:
     cmd: kubectl create -f k8s-node.yaml
+#    cmd: kubectl create -f /opt/kubernetes/server/bin/conf/k8s-node.yaml
+#    cmd: kubectl delete -f /opt/kubernetes/server/bin/conf/k8s-node.yaml
     chdir: /opt/kubernetes/server/bin/conf
   when: inventory_hostname == 'hdss7-21'
 
