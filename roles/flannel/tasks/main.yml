@@ -1,4 +1,10 @@
 ---
+- name: 下载flannel，使用wget可能会下载失败，所以这里是提前下载下来放到../packages/src目录
+  copy:
+    src: ../../../../src/flannel-v0.11.0-linux-amd64.tar.gz
+    dest: /opt/src/flannel-v0.11.0-linux-amd64.tar.gz
+    mode: 0644
+
 - name: 创建flannel相关目录
   shell: mkdir -p /opt/flannel-v0.11.0
 
@@ -7,6 +13,7 @@
 
 - name: 设置软链接
   shell: ln -s /opt/flannel-v0.11.0 /opt/flannel
+  ignore_errors: yes
 
 - name: 创建subnet.env配置文件
   # 把容器的网络规划成一个大的网段
