@@ -95,7 +95,7 @@
 - name: 上传kube-proxy.json文件，签发kube-proxy证书，证书里的CN也对应着k8s中的一种角色
   template:
     src: kube-proxy.json.j2
-    dest: /opt/certs/kubelet-csr.json
+    dest: /opt/certs/kube-proxy.json
     mode: 0644
 
 - name: 生成kube-porxy证书，注意这里 -profile是client，这个和之前client的证书不一样
