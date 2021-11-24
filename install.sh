@@ -17,11 +17,11 @@
 
 s_time=$(date "+%Y-%m-%d %H:%M:%S")
 
-#echo "$(date "+%Y-%m-%d %H:%M:%S") init.yml"
-#ansible-playbook -i hosts init.yml
-#
-#echo "$(date "+%Y-%m-%d %H:%M:%S") 初始化完成，重启机器中，需要等待一分钟"
-#sleep 60
+echo "$(date "+%Y-%m-%d %H:%M:%S") init.yml"
+ansible-playbook -i hosts init.yml
+
+echo "$(date "+%Y-%m-%d %H:%M:%S") 初始化完成，重启机器中，需要等待一分钟"
+sleep 60
 
 echo "$(date "+%Y-%m-%d %H:%M:%S") 机器重启完成"
 ansible-playbook -i hosts install.yml
