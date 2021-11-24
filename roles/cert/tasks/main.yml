@@ -91,3 +91,14 @@
   shell:
     cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=server kubelet-csr.json | cfssl-json -bare kubelet
     chdir: /opt/certs
+
+- name: 上传kube-proxy.json文件，签发kube-proxy证书，证书里的CN也对应着k8s中的一种角色
+  template:
+    src: kube-proxy.json.j2
+    dest: /opt/certs/kubelet-csr.json
+    mode: 0644
+
+- name: 生成kube-porxy证书，注意这里 -profile是client，这个和之前client的证书不一样
+  shell:
+    cmd: cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=client kube-proxy-csr.json | cfssl-json -bare kube-proxy-client
+    chdir: /opt/certs
