@@ -34,7 +34,13 @@
   shell: yum -y install ntpdate
 
 - name: 时间同步
-  shell: ntpdate -u cn.ntp.org.cn
+  shell: {{ item }}
+  with_items:
+    - ntpdate ntp1.aliyun.com
+    - ntpdate ntp1.aliyun.com
+
+- name: 设置ntp开机自启动
+  shell: systemctl start ntpdate && systemctl enable ntpdate
 
 - name: install tools
   shell: yum install -y sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils
