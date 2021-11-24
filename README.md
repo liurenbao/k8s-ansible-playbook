@@ -2,15 +2,13 @@
 
 这是一个k8s和ansible相结合的学习项目，使用ansible在**centos服务器**上一键部署K8S高可用集群。
 
-### 友情提示
+## 项目部署
 
-这是一个**不够优雅**的ansible playbook项目，主要是由于内功不足，导致某些代码和项目结构不够标准和优雅。
+进入到k8s项目目录下，执行命令：
 
-**有强烈的代码洁癖的请跳过，以免引起不适。或者也可以提issue告知修改建议，不胜感激！**
-
-> 大部分配置都是写死在脚本文件中，如果需要自定义配置，请自行按需修改，谢谢！
-
-
+```
+sh install.sh
+```
 
 ## 环境准备
 
@@ -26,7 +24,7 @@ brew install ansible
 
 > 如果macOS没有安装brew，请自行安装brew并设置国内源。
 
-**Centos**
+**CentOS**
 
 ```
 yum install -y epal-release
@@ -48,61 +46,33 @@ sudo apt-get install ansible
 echo "host_key_checking = False" >> /etc/ansible/ansible.cfg
 ```
 
-生成ssh key
+修改`group_vars/all.yml`文件，将下面的内容替换成你自己的节点的IP，**只需改IP，其他不能改**。
 
 ```
-ssh-keygen -t rsa -b 4096
-```
-
-> 可以加上`-C "邮箱地址"`，我这里是没有加的
-
-修改操作主机的`home`目录参数
-
-```
-vim group_vars/all.yml
-root_path: 你的home目录
-
-# macOS示例
+---
+# macOS
 # root_path: /Users/liuhuan
 
-# Linux示例
+# Linux
 # root_path: /root
+
+node11: 10.4.7.11
+node12: 10.4.7.12
+node21: 10.4.7.21
+node22: 10.4.7.22
+node200: 10.4.7.200
+gateway: 10.4.7.2
+
+virtual_ipaddress: 10.4.7.10
 ```
 
-
-
-## 项目部署
-
-### 一键部署
-
-进入到k8s项目目录下，执行命令
-
-```
-sh install.sh
-```
-
-### 手动部署
-
-```bash
-ansible-playbook -i hosts xxx.yml
-```
-其中xxx是需要执行的yml文件名，需要按照数字编号顺序执行，`03_test_harbor.yml`**不建议执行**，需要通过浏览器访问页面进行配置。
-
-
+**virtual_ipaddress**：是keepalived中的虚拟IP，不能和内网其他机器的IP地址冲突（重复）。
 
 ## 安装注意事项
 
-### 关于一键部署
-
-如果**不需要**测试将自己打包的镜像推送到自建harbor中，可以一键部署。
-
-如果需要使用自建harbor仓库，可以修改访问`harbor.od.com`页面的所在主机的DNS为`10.4.7.11`然后访问页面即可。
-
-> 比如我在macOS上访问harbor.od.com，那么就要修改我macOS的DNS。
-
 ### 关于安装包
 
-由于某种不可描述的原因，下载某些包无法下载，因此需要手动下载到指定目录。
+由于某种不可描述的原因，下载某些包无法下载，因此需要手动下载到`/opt/src`目录下。
 
 ```
 wget https://github.com/goharbor/harbor/releases/download/v2.2.2/harbor-offline-installer-v2.2.2.tgz
@@ -110,14 +80,6 @@ wget https://github.com/etcd-io/etcd/releases/download/v3.1.20/etcd-v3.1.20-linu
 wget https://dl.k8s.io/v1.17.2/kubernetes-server-linux-amd64.tar.gz
 wget https://github.com/flannel-io/flannel/releases/download/v0.11.0/flannel-v0.11.0-linux-amd64.tar.gz
 ```
-
-
-
-### 关于注释
-
-在yml文件中有许多被注释的内容，需要注意的是，因为是边运行边测，因此是注释已经运行过的命令，再运行新的命令。
-
-如果看到注释的`#`是两个或以上的，说明是不需要运行的内容，但可以参考。
 
 ### 关于集群规划
 
@@ -131,35 +93,26 @@ wget https://github.com/flannel-io/flannel/releases/download/v0.11.0/flannel-v0.
 
 ### 关于hosts文件
 
-后期hosts文件如有更新，请以最新提交为准
-
 ```text
 [nodes]
-node01 ansible_ssh_user="root" ansible_ssh_host=10.4.7.11 ansible_ssh_port=22 ansible_ssh_pass="1"
-node02 ansible_ssh_user="root" ansible_ssh_host=10.4.7.12 ansible_ssh_port=22 ansible_ssh_pass="1"
-node03 ansible_ssh_user="root" ansible_ssh_host=10.4.7.21 ansible_ssh_port=22 ansible_ssh_pass="1"
-node04 ansible_ssh_user="root" ansible_ssh_host=10.4.7.22 ansible_ssh_port=22 ansible_ssh_pass="1"
-node05 ansible_ssh_user="root" ansible_ssh_host=10.4.7.200 ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-11 ansible_ssh_user="root" ansible_ssh_host="{{ node11 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-12 ansible_ssh_user="root" ansible_ssh_host="{{ node12 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-21 ansible_ssh_user="root" ansible_ssh_host="{{ node21 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-22 ansible_ssh_user="root" ansible_ssh_host="{{ node22 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-200 ansible_ssh_user="root" ansible_ssh_host="{{ node200 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
 
 [11]
-node01
+hdss7-11
 
-[12]
-node02
-
-[21]
-node03
-
-[22]
-node04
-
-[200]
-node05
 ```
 
 > 中括号 `[]` 中的内容可以理解为别名，可以在ansible playbook中使用`'11'`来表示是`10.4.7.11`那台主机，使用`nodes`来表示所有主机。
 
+### 关于注释
 
+在yml文件中有许多被注释的内容，需要注意的是，因为是边运行边测，因此是注释已经运行过的命令，再运行新的命令。
+
+如果看到注释的`#`是两个或以上的，说明是不需要运行的内容，但可以参考。
 
 ### 关于高版本k8s
 
@@ -174,8 +127,6 @@ selector：
 
 * 低版本：可以不用加
 * 高版本：必须加上`selector`
-
-
 
 #### 新老版本资源清单对比
 
@@ -222,33 +173,9 @@ spec:
         - containerPort: 80
 ```
 
-
-
-### 修改宿主机DNS
+### 关于DNS
 
 由于是测试和学习环境，因此可以用`10.4.7.200:1800`来访问harbor页面，在服务器节点之间只要能解析到harbor.od.com即可。
-
-修改完宿主机的DNS之后，如果由于从公司到家切换网络，可能造成ansible连接被控机器缓慢，或访问网页缓慢，可以尝试在DNS中添加DNS地址：
-
-```
-223.5.5.5
-8.8.8.8
-114.114.114.144
-```
-
-或者可以删除`10.4.7.11`以外的DNS信息并保存之后，马上再重新添加回去，网络即可恢复异常。如还是未能正常，请自行搜索资料排查解决。
-
-## harbor页面配置
-
-访问`harbor.od.com`页面，输入账户密码，新建项目，项目名为**public**。
-
-> 默认账号: admin 密码: Harbor12345
->
-> 账号密码可在`/opt/harbor/harbor.yml`去修改
-
-![](https://borinboy.oss-cn-shanghai.aliyuncs.com/huan/20211009221842.png)
-
-
 
 ## 其他详解
 
@@ -302,8 +229,6 @@ nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主�
     systemctl restart keepalived
     ```
 
-
-
 ### kube-controller-manager
 
 ```sh
@@ -316,8 +241,6 @@ nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主�
   --master http://127.0.0.1:8080 \
   --v 2
 ```
-
-
 
 ### kubelet
 
@@ -349,8 +272,6 @@ nopreempt：非抢占式，避免因为网络抖动导致节点漂移，当主�
     ]
 }
 ```
-
-
 
 ### K8S用户体系简介
 
@@ -394,54 +315,4 @@ subjects:
       shell: kubectl get svc
 ```
 
-
-
-## 集群验证
-
-在7-21机器上，使用ansible-playbook命令来执行脚本。
-
-```yaml
----
-- hosts: '21'
-  user: root
-  tasks:
-    - name: 配置验证集群的yaml文件
-      copy:
-        src: packages/root/nginx-ds.yaml
-        dest: /root/nginx-ds.yaml
-        mode: 0644
-
-    - name: kubectl create -f nginx-ds.yaml
-      shell: kubectl create -f /root/nginx-ds.yaml
-
-    - name: kubectl get pods
-      shell: kubectl get pods
-
-    - name: kubectl get cs
-      shell: kubectl get cs
-
-    - name: kubectl get node
-      shell: kubectl get node
-```
-
-也可以手动执行命令
-
-```
-[root@hdss7-21 ~]# kubectl get pods
-NAME             READY   STATUS              RESTARTS   AGE
-nginx-ds-8m278   0/1     ContainerCreating   0          15m
-
-[root@hdss7-21 ~]# kubectl get cs
-NAME                 STATUS    MESSAGE              ERROR
-controller-manager   Healthy   ok
-scheduler            Healthy   ok
-etcd-1               Healthy   {"health": "true"}
-etcd-0               Healthy   {"health": "true"}
-etcd-2               Healthy   {"health": "true"}
-
-[root@hdss7-21 ~]# kubectl get node
-NAME                STATUS   ROLES         AGE    VERSION
-hdss7-21.host.com   Ready    master,node   152m   v1.17.2
-hdss7-22.host.com   Ready    master,node   152m   v1.17.2
-```
 
