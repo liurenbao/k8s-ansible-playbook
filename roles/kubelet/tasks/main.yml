@@ -38,6 +38,9 @@
     chdir: /opt/kubernetes/server/bin/conf
   when: inventory_hostname == 'hdss7-21'
 
+- name: 等待资源创建
+  pause: seconds=10
+
 - name: 查看集群角色权限绑定关系
   shell: kubectl get clusterrolebinding k8s-node
   register: std_out
