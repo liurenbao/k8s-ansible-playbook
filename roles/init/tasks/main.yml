@@ -34,7 +34,7 @@
   shell: yum -y install ntpdate
 
 - name: 时间同步
-  shell: {{ item }}
+  shell: "{{ item }}"
   with_items:
     - ntpdate ntp1.aliyun.com
     - ntpdate ntp1.aliyun.com
