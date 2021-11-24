@@ -1,0 +1,2 @@
+last_num_of_ip: "{{ ansible_default_ipv4.address.split('.')[-1] }}"
+flannel-ip: "{{ ansible_default_ipv4.address }}"

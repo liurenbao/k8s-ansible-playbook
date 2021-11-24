@@ -1,0 +1,111 @@
+---
+- name: 创建flannel相关目录
+  shell: mkdir -p /opt/flannel-v0.11.0
+
+- name: 解压flannel到指定目录
+  shell: tar xf /opt/src/flannel-v0.11.0-linux-amd64.tar.gz -C /opt/flannel-v0.11.0
+
+- name: 设置软链接
+  shell: ln -s /opt/flannel-v0.11.0 /opt/flannel
+
+- name: 创建subnet.env配置文件
+  # 把容器的网络规划成一个大的网段
+  template:
+    src: subnet.env.j2
+    dest: /opt/flannel/subnet.env
+    mode: 0644
+
+- name: 创建flanneld.sh配置文件
+  # 把容器的网络规划成一个大的网段
+  # public-ip是本身暴露出来的运算节点（node节点）IP地址
+  # 要看网卡名称是否是eth0，如果不是要按需修改
+  template:
+    src: flanneld.sh.j2
+    dest: /opt/flannel/flanneld.sh
+    mode: 0755
+
+- name: 创建supervisor配置文件
+  template:
+    src: flanneld.ini.j2
+    dest: /etc/supervisord.d/flanneld.ini
+    mode: 0644
+
+- name: 创建证书目录
+  shell: mkdir -p /opt/flannel/cert
+
+- name: 从7-200机器上拷贝ca证书
+  # 因为flannel需要使用etcd做一些默认存储配置的，因此需要flanne连上etcd通信
+  # 对于etcd来说，flannel是etcd的客户端，因此需要拷贝client.pem
+  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/ca.pem /opt/flannel/cert
+
+- name: 从7-200机器上拷贝client证书
+  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/client*.pem /opt/flannel/cert
+
+- name: 创建flannel日志相关目录
+  shell: mkdir -p /data/logs/flanneld
+
+# '{"Network": "172.7.0.0/16", "SubnetLen": 24, "SubnetMin": "172.7.21.0","SubnetMax": "172.7.22.0", "Backend": {"Type": "host-gw"}}'
+- name: 操作etcd，增加host-gw
+  shell:
+    cmd: >
+      ETCDCTL_API=2 etcdctl set /coreos.com/network/config
+      '{"Network": "172.7.0.0/16", "Backend": {"Type": "host-gw"}}'
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 查看etcdctl get /coreos.com/network/config输出
+  shell: etcdctl get /coreos.com/network/config
+  register: std_out
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 查看etcdctl get /coreos.com/network/config输出
+  debug: msg={{ std_out.stdout_lines }}
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 使用supervisorctl启动flannel服务
+  shell: supervisorctl update
+
+- name: 查看输出结果
+  shell: cat /data/logs/flanneld/flanneld.stdout.log
+  register: std_out
+
+- name: 查看flanneld.stdout.log输出结果
+  debug: msg={{ std_out.stdout_lines }}
+
+- name: 安装iptables-services
+  shell: yum -y install iptables-services
+
+- name: 启动iptables并设为开机自启动
+  shell: systemctl start iptables && systemctl enable iptables
+
+- name: 查看已有的postrouting规则
+  shell: iptables-save | grep -i postrouting
+  register: std_out
+
+- name: 查看已有的postrouting规则输出结果
+  debug: msg={{ std_out.stdout_lines }}
+
+# -s source -D(Delete)
+- name: 取消原有iptables转发规则
+  shell: iptables -t nat -D POSTROUTING -s 172.7."{{ last_num_of_ip }}".0/24 ! -o docker0 -j MASQUERADE
+
+- name: 设置iptables转发规则，将出网网卡设置为docker0
+  # -s source -I（Insert）-d destination，
+  # 翻译下来从172.7.21.0/24出去的，不是到172.7.0.0/16，不是从docker0网卡转发的，才做SNAT转换
+  shell: iptables -t nat -I POSTROUTING -s 172.7."{{ last_num_of_ip }}".0/24 ! -d 172.7.0.0/16 ! -o docker0 -j MASQUERADE
+
+- name: 保存iptables规则到/etc/sysconfig/iptables
+  shell: iptables-save > /etc/sysconfig/iptables
+
+- name: 查看iptables规则
+  shell: iptables-save | grep -i reject
+
+- name: 删除掉可能会影响pod通信的规则
+  shell: iptables -t filter -D INPUT  -j REJECT --reject-with icmp-host-prohibited
+  ignore_errors: yes
+
+- name: 删除掉可能会影响pod通信的规则
+  shell: iptables -t filter -D FORWARD -j REJECT --reject-with icmp-host-prohibited
+  ignore_errors: yes
+
+- name: 保存iptables规则到/etc/sysconfig/iptables
+  shell: iptables-save > /etc/sysconfig/iptables

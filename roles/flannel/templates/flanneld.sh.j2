@@ -1,0 +1,10 @@
+#!/bin/sh
+./flanneld \
+  --public-ip={{ flannel-ip }} \
+  --etcd-endpoints=https://{{ node12 }}:2379,https://{{ node21 }}:2379,https://{{ node22 }}:2379 \
+  --etcd-keyfile=/opt/flannel/cert/client-key.pem \
+  --etcd-certfile=/opt/flannel/cert/client.pem \
+  --etcd-cafile=/opt/flannel/cert/ca.pem \
+  --iface=eth0 \
+  --subnet-file=/opt/flannel/subnet.env \
+  --healthz-port=2401
