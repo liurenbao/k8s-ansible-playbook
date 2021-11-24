@@ -1,0 +1,53 @@
+---
+- name: 分发kube-proxy证书
+  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@hdss7-200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
+
+- name: kubelet配置节点命令
+  shell:
+    cmd: kubectl config set-cluster myk8s --certificate-authority=/opt/kubernetes/server/bin/cert/ca.pem --embed-certs=true --server=https://{{ virtual_ipaddress }}:7443 --kubeconfig=kube-proxy.kubeconfig
+    chdir: /opt/kubernetes/server/bin/conf
+
+- name: kubelet配置节点命令, 配置kube-proxy-client-key证书
+  shell:
+    cmd: kubectl config set-credentials kube-proxy --client-certificate=/opt/kubernetes/server/bin/cert/kube-proxy-client.pem --client-key=/opt/kubernetes/server/bin/cert/kube-proxy-client-key.pem --embed-certs=true --kubeconfig=kube-proxy.kubeconfig
+    chdir: /opt/kubernetes/server/bin/conf
+
+- name: kubelet配置集群
+  shell:
+    cmd:  kubectl config set-context myk8s-context --cluster=myk8s --user=kube-proxy --kubeconfig=kube-proxy.kubeconfig
+    chdir: /opt/kubernetes/server/bin/conf
+
+- name: kubelet配置use-context
+  shell:
+    cmd:  kubectl config use-context myk8s-context --kubeconfig=kube-proxy.kubeconfig
+    chdir: /opt/kubernetes/server/bin/conf
+
+- name: 配置ipvs.sh
+  template:
+    src: ipvs.sh.j2
+    dest: /root/ipvs.sh
+    mode: 0755
+
+- name: 执行ipvs.sh
+  shell: /root/ipvs.sh
+
+- name: 使用 lsmod | grep ip_vs 查看ipvs状态
+  shell: lsmod | grep ip_vs
+
+- name: 配置kube-proxy.sh
+  template:
+    src: kube-proxy.sh.j2
+    dest: /opt/kubernetes/server/bin/kube-proxy.sh
+    mode: 0755
+
+- name: 配置kube-proxy.ini
+  template:
+    src: kube-proxy.ini.j2
+    dest: /etc/supervisord.d/kube-proxy.ini
+    mode: 0644
+
+- name: 创建kube-proxy相关目录
+  shell: mkdir -p /data/logs/kubernetes/kube-proxy
+
+- name: 使用supervisorctl启动kube-porxy服务
+  shell: supervisorctl update
