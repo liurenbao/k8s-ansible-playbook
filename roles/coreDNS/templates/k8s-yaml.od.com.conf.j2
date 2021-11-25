@@ -1,0 +1,10 @@
+server {
+    listen       80;
+    server_name  k8s-yaml.od.com;
+
+    location / {
+        autoindex on;
+        default_type text/plain;
+        root /data/k8s-yaml;
+    }
+}
