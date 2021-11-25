@@ -50,6 +50,9 @@ hdss7-22
 hdss7-21
 hdss7-22
 
+[check]
+hdss7-21
+
 [coreDNS]
 hdss7-11
 hdss7-21
@@ -78,6 +81,3 @@ hdss7-11
 hdss7-21
 hdss7-22
 hdss7-200
-
-[node21]
-hdss7-21

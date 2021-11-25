@@ -57,7 +57,7 @@
 
 - name: 创建cm.yaml资源配置清单
   template:
-    src: "{{ item }}".j2
+    src: "{{ item }}.j2"
     dest: /data/k8s-yaml/coredns/{{ item }}
     mode: 0644
   with_items:

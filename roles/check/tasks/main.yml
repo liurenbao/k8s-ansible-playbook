@@ -1,0 +1,29 @@
+---
+- name: 配置验证集群的yaml文件
+  template:
+    src: nginx-ds.yaml.j2
+    dest: /root/nginx-ds.yaml
+    mode: 0644
+
+- name: 拉取nginx:1.7.9镜像
+  shell: docker pull docker.io/library/nginx:1.7.9
+
+- name: kubectl create -f nginx-ds.yaml
+  shell: kubectl create -f /root/nginx-ds.yaml
+
+- name: kubectl get pods -o wide
+  shell: kubectl get pods -o wide
+  register: std_out
+
+- name: 查看kubectl get pods输出
+  debug: msg={{ std_out.stdout_lines }}
+
+- name: kubectl get cs
+  shell: kubectl get cs
+  register: std_out
+
+- name: 查看kubectl get cs输出
+  debug: msg={{ std_out.stdout_lines }}
+
+- name: 查看kubectl get node输出
+  debug: msg={{ std_out.stdout_lines }}

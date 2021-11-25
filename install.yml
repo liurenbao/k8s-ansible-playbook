@@ -63,8 +63,14 @@
 #  roles:
 #    - flannel
 
-- name: 安装flannel网络插件
-  hosts: coreDNS
+- name: 检查集群
+  hosts: check
   remote_user: root
   roles:
-    - coreDNS
+    - check
+
+#- name: 安装flannel网络插件
+#  hosts: coreDNS
+#  remote_user: root
+#  roles:
+#    - coreDNS
