@@ -4,7 +4,7 @@
 
 - name: 上传zookeeper
   copy:
-    src: ../../../packages/opt/src/jdk-8u91-linux-x64.tar.gz
+    src: ../../../src/jdk-8u91-linux-x64.tar.gz
     dest: /opt/src/jdk-8u91-linux-x64.tar.gz
     mode: 0644
 

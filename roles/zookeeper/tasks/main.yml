@@ -1,0 +1,47 @@
+---
+- name: 上传zookeeper
+  copy:
+    src: ../../../src/zookeeper-3.4.14.tar.gz
+    dest: /opt/src/zookeeper-3.4.14.tar.gz
+    mode: 0644
+
+- name: 解压zookeeper
+  shell: tar -zxvf /opt/src/zookeeper-3.4.14.tar.gz -C /opt
+
+- name: 创建zookeeper相关目录
+  shell: mkdir -p /opt/zookeeper-3.4.14
+  ignore_errors: yes
+
+- name: 制作zookeeper软链接
+  shell: ln -s /opt/zookeeper-3.4.14 /opt/zookeeper
+  ignore_errors: yes
+
+- name: 创建zookeeper相关目录
+  shell: mkdir -pv /data/zookeeper/data /data/zookeeper/logs
+  ignore_errors: yes
+
+- name: config zookeeper
+  template:
+    src: zoo.cfg.j2
+    dest: /opt/zookeeper/conf/zoo.cfg
+    mode: 0644
+
+- name: config myid
+  shell: mkdir -p /opt/zookeeper/data
+
+- name: config myid
+  template:
+    src: myid.j2
+    dest: "/data/zookeeper/data/myid"
+    mode: 0644
+
+- name: 启动zookeeper
+  shell: source /etc/profile && /opt/zookeeper/bin/zkServer.sh start
+
+- name: 查看zookeeper状态
+  shell: source /etc/profile && /opt/zookeeper/bin/zkServer.sh status
+  register: std_out
+  ignore_errors: yes
+
+- name: 查看zookeeper输出结果
+  debug: msg={{ std_out.stdout_lines }}
