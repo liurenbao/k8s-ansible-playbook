@@ -97,7 +97,11 @@
 
 - name: 重启keepalived
   shell: systemctl restart keepalived
-  ignore_errors: yes
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 重启keepalived
+  shell: systemctl restart keepalived
+  when: inventory_hostname == 'hdss7-22'
 
 - name: 查看coredns在k8s中的状态
   shell: kubectl get all -n kube-system -o wide
@@ -121,10 +125,12 @@
   shell: dig -t A www.baidu.com @192.168.0.2 +short
   register: std_out
   when: inventory_hostname == 'hdss7-21'
+  ignore_errors: yes
 
 - name: 查看coredns解析www.baidu.com的情况输出
   debug: msg={{ std_out.stdout_lines }}
   when: inventory_hostname == 'hdss7-21'
+  ignore_errors: yes
 
 - name: 查看coredns解析hdss7-21.host.com的情况
   shell: dig -t A hdss7-21.host.com @192.168.0.2 +short
