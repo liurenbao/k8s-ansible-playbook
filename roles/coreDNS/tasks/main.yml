@@ -1,4 +1,15 @@
 ---
+- name: 使用yum安装nginx
+  shell: yum -y install nginx
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建目录
+  shell: mkdir -p /etc/nginx/conf.d
+
+- name: 启动nginx并设置为开机自启动
+  shell: systemctl start nginx && systemctl enable nginx
+  when: inventory_hostname == 'hdss7-200'
+
 - name: 部署K8S的内网资源配置清单http服务
   template:
     src: k8s-yaml.od.com.conf.j2

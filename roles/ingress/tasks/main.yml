@@ -1,0 +1,99 @@
+---
+- name: 创建traefik目录
+  shell: mkdir -p /data/k8s-yaml/traefik
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用docker pull traefik
+  shell: docker pull traefik:v1.7.2-alpine
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建资源配置清单
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/traefik/{{ item }}
+    mode: 0644
+  with_items:
+    - rbac.yaml
+    - ds.yaml
+    - svc.yaml
+    - ingress.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 配置反向代理，这是配置的一个七层反向代理
+  # 这样的话nginx不用再动了，七层代理就干这点事
+  # 如果需要调度流量7层规则怎么办？
+  # 只需要声明ingress资源配置清单
+  # 凡是走向*.od.com的流量，全部转发到IngressController-->Ingress类型资源
+  # 而Ingress中又定义了spec/rules/规则，去找traefik-ingress-service
+  template:
+    src: od.com.conf.j2
+    dest: /etc/nginx/conf.d/od.com.conf
+    mode: 0644
+
+- name: 重新加载nginx配置
+  shell: nginx -s reload
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用kubectl apply -f创建资源
+  shell: kubectl apply -f http://k8s-yaml.od.com/traefik/{{ item }}
+  with_items:
+    - rbac.yaml
+    - ds.yaml
+    - svc.yaml
+    - ingress.yaml
+  when: inventory_hostname == 'hdss7-22'
+
+- name: 重启docker
+  shell: systemctl restart docker
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 重启docker
+  shell: systemctl restart docker
+  when: inventory_hostname == 'hdss7-22'
+
+- name: 等待traefik资源创建
+  pause: seconds=30
+
+- name: 查看创建状态
+  shell: kubectl get pods -n kube-system -o wide
+  register: std_out
+  when: inventory_hostname == 'hdss7-22'
+
+- name: 查看kubectl get pods -n kube-system -o wide输出
+  debug: msg={{ std_out.stdout_lines }}
+  when: inventory_hostname == 'hdss7-22'
+
+- name: 查看端口监听
+  shell: netstat -luntp | grep 81
+  register: std_out
+  ignore_errors: yes
+  when: inventory_hostname == 'hdss7-22'
+
+- name: 查看端口监听输出结果
+  debug: msg={{ std_out.stdout_lines }}
+  ignore_errors: yes
+  when: inventory_hostname == 'hdss7-22'
+
+- name: 在/var/named/od.com.zone增加域名解析记录
+  lineinfile:
+    dest: /var/named/od.com.zone
+    regexp: '^traefik'
+    line: 'traefik          A {{ virtual_ipaddress }}'
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 重启named服务
+  shell: systemctl restart named
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 重启network
+  shell: systemctl restart network
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 验证DNS解析是否正常
+  shell: dig -t A k8s-yaml.od.com @"{{ node11 }}" +short
+  register: std_out
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 查看验证DNS解析是否正常输出结果
+  debug: msg={{ std_out.stdout_lines }}
+  when: inventory_hostname == 'hdss7-11'
