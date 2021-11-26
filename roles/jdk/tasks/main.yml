@@ -18,7 +18,7 @@
 #    creates: /usr/local/java/jdk1.8.0_91
 
 - name: 做Java软链接，方便以后升级
-  shell: ln -s /usr/local/java/jdk1.8.0_91 /usr/local/java/jdk
+  shell: ln -s /opt/jdk1.8.0_91 /usr/local/java/jdk
   ignore_errors: yes
 
 - name: 配置Java环境变量
