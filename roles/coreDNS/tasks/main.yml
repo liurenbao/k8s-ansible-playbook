@@ -95,6 +95,10 @@
   shell: systemctl restart docker
   ignore_errors: yes
 
+- name: 重启keepalived
+  shell: systemctl restart keepalived
+  ignore_errors: yes
+
 - name: 查看coredns在k8s中的状态
   shell: kubectl get all -n kube-system -o wide
   register: std_out
