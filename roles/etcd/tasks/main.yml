@@ -27,7 +27,7 @@
   shell: mkdir -p /opt/etcd/certs /data/etcd /data/logs/etcd-server
 
 - name: 从200机器上复制etcd证书文件
-  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/"{{ item }}" /opt/etcd/certs
+  shell: sshpass -p '{{ password }}' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/"{{ item }}" /opt/etcd/certs
   with_items:
     - etcd*.pem
     - ca.pem

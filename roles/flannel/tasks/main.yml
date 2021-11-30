@@ -43,10 +43,10 @@
 - name: 从7-200机器上拷贝ca证书
   # 因为flannel需要使用etcd做一些默认存储配置的，因此需要flanne连上etcd通信
   # 对于etcd来说，flannel是etcd的客户端，因此需要拷贝client.pem
-  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/ca.pem /opt/flannel/cert
+  shell: sshpass -p '{{ password }}' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/ca.pem /opt/flannel/cert
 
 - name: 从7-200机器上拷贝client证书
-  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/client*.pem /opt/flannel/cert
+  shell: sshpass -p '{{ password }}' scp -oStrictHostKeyChecking=no root@hdss7-200:/opt/certs/client*.pem /opt/flannel/cert
 
 - name: 创建flannel日志相关目录
   shell: mkdir -p /data/logs/flanneld

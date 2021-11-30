@@ -1,6 +1,6 @@
 ---
 - name: 分发kube-proxy证书
-  shell: sshpass -p '1' scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@hdss7-200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
+  shell: sshpass -p '{{ password }}' scp -oStrictHostKeyChecking=no -i /root/.ssh/id_rsa root@hdss7-200:/opt/certs/kube-proxy*.pem /opt/kubernetes/server/bin/cert
 
 - name: kubelet配置节点命令
   shell:

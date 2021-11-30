@@ -5,6 +5,8 @@ root_path: /Users/liuhuan
 # Linux
 # root_path: /root
 
+password: 1
+
 node11: 10.4.7.11
 node12: 10.4.7.12
 node21: 10.4.7.21
