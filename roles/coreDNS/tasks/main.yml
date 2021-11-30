@@ -97,11 +97,11 @@
 
 - name: 重启keepalived
   shell: systemctl restart keepalived
-  when: inventory_hostname == 'hdss7-21'
+  when: inventory_hostname == 'hdss7-11'
 
 - name: 重启keepalived
   shell: systemctl restart keepalived
-  when: inventory_hostname == 'hdss7-22'
+  when: inventory_hostname == 'hdss7-12'
 
 - name: 查看coredns在k8s中的状态
   shell: kubectl get all -n kube-system -o wide
