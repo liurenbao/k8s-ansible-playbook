@@ -48,6 +48,7 @@
 
 - name: 重启named
   shell: systemctl restart named && systemctl restart network
+  when: inventory_hostname == 'hdss7-11'
 
 - name: 启动zookeeper
   shell: /opt/zookeeper/bin/zkServer.sh start
