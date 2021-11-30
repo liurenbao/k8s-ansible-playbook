@@ -1,9 +1,9 @@
 [nodes]
-hdss7-11 ansible_ssh_user="root" ansible_ssh_host="{{ node11 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
-hdss7-12 ansible_ssh_user="root" ansible_ssh_host="{{ node12 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
-hdss7-21 ansible_ssh_user="root" ansible_ssh_host="{{ node21 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
-hdss7-22 ansible_ssh_user="root" ansible_ssh_host="{{ node22 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
-hdss7-200 ansible_ssh_user="root" ansible_ssh_host="{{ node200 }}" ansible_ssh_port=22 ansible_ssh_pass="1"
+hdss7-11 ansible_ssh_user="root" ansible_ssh_host="{{ node11 }}" ansible_ssh_port=22 ansible_ssh_pass="{{ password }}"
+hdss7-12 ansible_ssh_user="root" ansible_ssh_host="{{ node12 }}" ansible_ssh_port=22 ansible_ssh_pass="{{ password }}"
+hdss7-21 ansible_ssh_user="root" ansible_ssh_host="{{ node21 }}" ansible_ssh_port=22 ansible_ssh_pass="{{ password }}"
+hdss7-22 ansible_ssh_user="root" ansible_ssh_host="{{ node22 }}" ansible_ssh_port=22 ansible_ssh_pass="{{ password }}"
+hdss7-200 ansible_ssh_user="root" ansible_ssh_host="{{ node200 }}" ansible_ssh_port=22 ansible_ssh_pass="{{ password }}"
 
 [11]
 hdss7-11

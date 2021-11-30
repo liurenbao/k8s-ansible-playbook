@@ -32,15 +32,18 @@
 
 - name: 下载ntpdate
   shell: yum -y install ntpdate
+  ignore_errors: yes
 
 - name: 时间同步
   shell: "{{ item }}"
   with_items:
     - ntpdate ntp1.aliyun.com
     - ntpdate ntp1.aliyun.com
+  ignore_errors: yes
 
 - name: 设置ntp开机自启动
   shell: systemctl start ntpdate && systemctl enable ntpdate
+  ignore_errors: yes
 
 - name: install tools
   shell: yum install -y sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils
@@ -83,8 +86,11 @@
 - name: 修改网卡的DNS为7-11的IP（自建的DNS）
   lineinfile:
     dest: /etc/sysconfig/network-scripts/ifcfg-eth0
-    regexp: '^DNS1'
-    line: 'DNS1={{ node11 }}'
+    regexp: '^{{ item.name }}'
+    line: '{{ item.value }}'
+  with_items:
+    - { name: 'DNS1', value: 'DNS1={{ node11 }}' }
+    - { name: 'DNS2', value: 'DNS2=223.5.5.5' }
 
 - name: 启动named服务并设置为开机自启动
   shell: systemctl start named && systemctl enable named
