@@ -35,6 +35,17 @@
     dest: "/data/zookeeper/data/myid"
     mode: 0644
 
+- name: config named
+  lineinfile:
+    dest: /var/named/od.com.zone
+    regexp: '^{{ item.name }}'
+    line: '{{ item.value }}'
+  with_items:
+    - { name: 'zk1', value: '      A {{ node11 }}' }
+    - { name: 'zk2', value: '      A {{ node12 }}' }
+    - { name: 'zk3', value: '      A {{ node21 }}' }
+  when: inventory_hostname == 'hdss7-11'
+
 - name: 启动zookeeper
   shell: source /etc/profile && /opt/zookeeper/bin/zkServer.sh start
 
