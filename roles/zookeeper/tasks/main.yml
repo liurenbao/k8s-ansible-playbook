@@ -41,9 +41,9 @@
     regexp: '^{{ item.name }}'
     line: '{{ item.value }}'
   with_items:
-    - { name: 'zk1', value: 'zk1.od.com      A {{ node11 }}' }
-    - { name: 'zk2', value: 'zk2.od.com      A {{ node12 }}' }
-    - { name: 'zk3', value: 'zk3.od.com      A {{ node21 }}' }
+    - { name: 'zk1', value: 'zk1      A {{ node11 }}' }
+    - { name: 'zk2', value: 'zk2      A {{ node12 }}' }
+    - { name: 'zk3', value: 'zk3      A {{ node21 }}' }
   when: inventory_hostname == 'hdss7-11'
 
 - name: 重启named
