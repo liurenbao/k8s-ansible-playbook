@@ -41,16 +41,19 @@
     regexp: '^{{ item.name }}'
     line: '{{ item.value }}'
   with_items:
-    - { name: 'zk1', value: '      A {{ node11 }}' }
-    - { name: 'zk2', value: '      A {{ node12 }}' }
-    - { name: 'zk3', value: '      A {{ node21 }}' }
+    - { name: 'zk1', value: 'zk1.od.com      A {{ node11 }}' }
+    - { name: 'zk2', value: 'zk2.od.com      A {{ node12 }}' }
+    - { name: 'zk3', value: 'zk3.od.com      A {{ node21 }}' }
   when: inventory_hostname == 'hdss7-11'
 
+- name: 重启named
+  shell: systemctl restart named && systemctl restart network
+
 - name: 启动zookeeper
-  shell: source /etc/profile && /opt/zookeeper/bin/zkServer.sh start
+  shell: /opt/zookeeper/bin/zkServer.sh start
 
 - name: 查看zookeeper状态
-  shell: source /etc/profile && /opt/zookeeper/bin/zkServer.sh status
+  shell: /opt/zookeeper/bin/zkServer.sh status
   register: std_out
   ignore_errors: yes
 
