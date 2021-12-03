@@ -91,11 +91,11 @@
 
 - name: 重启keepalived
   shell: systemctl restart keepalived
-  when: inventory_hostname == 'hdss7-21'
+  when: inventory_hostname == 'hdss7-11'
 
 - name: 重启keepalived
   shell: systemctl restart keepalived
-  when: inventory_hostname == 'hdss7-22'
+  when: inventory_hostname == 'hdss7-11'
 
 - name: 验证DNS解析是否正常
   shell: dig -t A k8s-yaml.od.com @"{{ node11 }}" +short
