@@ -123,8 +123,8 @@
 
 - name: 查看coredns解析www.baidu.com的情况
   shell: dig -t A www.baidu.com @192.168.0.2 +short
-  register: std_out
   when: inventory_hostname == 'hdss7-21'
+  register: std_out
   ignore_errors: yes
 
 - name: 查看coredns解析www.baidu.com的情况输出
@@ -134,8 +134,9 @@
 
 - name: 查看coredns解析hdss7-21.host.com的情况
   shell: dig -t A hdss7-21.host.com @192.168.0.2 +short
-  register: std_out
   when: inventory_hostname == 'hdss7-21'
+  register: std_out
+  ignore_errors: yes
 
 - name: 查看coredns解析www.baidu.com的情况输出，因为我们在cm.yaml文件里面声明了forward
   # 它的下一级DNS就是10.4.7.11
