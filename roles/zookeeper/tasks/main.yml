@@ -57,6 +57,9 @@
 - name: 启动zookeeper
   shell: /opt/zookeeper/bin/zkServer.sh start
 
+- name: 等待zookeeper服务启动，视硬件而定，固态硬盘会快一点，机械硬盘就比较慢
+  pause: seconds=30
+
 - name: 查看zookeeper状态
   shell: /opt/zookeeper/bin/zkServer.sh status
   register: std_out
