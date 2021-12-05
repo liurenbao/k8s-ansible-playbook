@@ -1,4 +1,4 @@
-- name: 拉取prometheus景象
+- name: 拉取prometheus镜像
   shell: docker pull quay.io/coreos/kube-state-metrics:v1.5.0
   when: inventory_hostname == 'hdss7-200'
 
@@ -10,19 +10,19 @@
   shell: mkdir -p /data/nfs-volume/prometheus
   when: inventory_hostname == 'hdss7-200'
 
-- name: 创建prometheus yaml文件
+- name: 创建kube state metrics yaml文件
   template:
     src: "{{ item }}.j2"
     dest: /data/k8s-yaml/kube-state-metrics/{{ item }}
     mode: 0644
   with_items:
-    - prometheus-rbac.yaml
-    - prometheus-dp.yaml
+    - kube-state-metrics-rbac.yaml
+    - kube-state-metrics-dp.yaml
   when: inventory_hostname == 'hdss7-200'
 
 - name: 使用kubectl apply -f应用yaml文件
   shell: kubectl apply -f http://k8s-yaml.od.com/kube-state-metrics/{{ item }}
   with_items:
-    - prometheus-rbac.yaml
-    - prometheus-dp.yaml
+    - kube-state-metrics-rbac.yaml
+    - kube-state-metrics-dp.yaml
   when: inventory_hostname == 'hdss7-21'
