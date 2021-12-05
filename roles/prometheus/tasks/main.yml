@@ -6,6 +6,10 @@
   shell: mkdir -p /data/k8s-yaml/kube-state-metrics
   when: inventory_hostname == 'hdss7-200'
 
+- name: 创建prometheus相关目录
+  shell: mkdir -p /data/nfs-volume/prometheus
+  when: inventory_hostname == 'hdss7-200'
+
 - name: 创建prometheus yaml文件
   template:
     src: "{{ item }}.j2"
