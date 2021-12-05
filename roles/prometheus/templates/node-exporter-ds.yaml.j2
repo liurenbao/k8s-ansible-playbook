@@ -29,7 +29,7 @@ spec:
           type: ""
       containers:
       - name: node-exporter
-        image: harbor.od.com/library/node-exporter:v0.15.0
+        image: docker.io/prom/node-exporter:v0.15.0
         imagePullPolicy: IfNotPresent
         args:
         - --path.procfs=/host_proc

@@ -1,16 +1,16 @@
-- name: 拉取prometheus镜像
+- name: 拉取kube-state-metrics镜像
   shell: docker pull quay.io/coreos/kube-state-metrics:v1.5.0
   when: inventory_hostname == 'hdss7-200'
 
-- name: 创建prometheus相关目录
+- name: 创建kube-state-metrics相关目录
   shell: mkdir -p /data/k8s-yaml/kube-state-metrics
   when: inventory_hostname == 'hdss7-200'
 
-- name: 创建prometheus相关目录
-  shell: mkdir -p /data/nfs-volume/prometheus
-  when: inventory_hostname == 'hdss7-200'
+#- name: 创建prometheus相关目录
+#  shell: mkdir -p /data/nfs-volume/prometheus
+#  when: inventory_hostname == 'hdss7-200'
 
-- name: 创建kube state metrics yaml文件
+- name: 创建kube-state-metrics-dp相关yaml文件
   template:
     src: "{{ item }}.j2"
     dest: /data/k8s-yaml/kube-state-metrics/{{ item }}
@@ -25,4 +25,27 @@
   with_items:
     - kube-state-metrics-rbac.yaml
     - kube-state-metrics-dp.yaml
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 拉取node-exporter镜像
+  shell: docker pull prom/node-exporter:v0.15.0
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建node-exporter相关目录
+  shell: mkdir -p /data/k8s-yaml/node-exporter
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建node-exporter-ds.yaml文件
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/node-exporter/{{ item }}
+    mode: 0644
+  with_items:
+    - node-exporter-ds.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用kubectl apply -f应用yaml文件
+  shell: kubectl apply -f http://k8s-yaml.od.com/node-exporter/{{ item }}
+  with_items:
+    - node-exporter-ds.yaml
   when: inventory_hostname == 'hdss7-21'
