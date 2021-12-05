@@ -21,7 +21,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: cadvisor
-        image: harbor.od.com/library/cadvisor:v0.28.3
+        image: docker.io/google/cadvisor:v0.28.3
         imagePullPolicy: IfNotPresent
         volumeMounts:
         - name: rootfs

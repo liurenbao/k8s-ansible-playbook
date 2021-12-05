@@ -49,3 +49,25 @@
   with_items:
     - node-exporter-ds.yaml
   when: inventory_hostname == 'hdss7-21'
+
+- name: 拉取镜像
+  shell: docker pull google/cadvisor:v0.28.3
+
+- name: 创建目录
+  shell: mkdir -p data/k8s-yaml/cadvisor
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建cadivisor-ds.yaml文件
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/cadvisor/{{ item }}
+    mode: 0644
+  with_items:
+    - cadivisor-ds.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用kubectl apply -f应用yaml文件
+  shell: kubectl apply -f http://k8s-yaml.od.com/cadvisor/{{ item }}
+  with_items:
+    - cadivisor-ds.yaml
+  when: inventory_hostname == 'hdss7-21'
