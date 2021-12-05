@@ -92,3 +92,15 @@
   remote_user: root
   roles:
     - zookeeper
+
+- name: 安装nfs
+  hosts: nfs
+  remote_user: root
+  roles:
+    - nfs
+
+- name: 安装prometheus
+  hosts: prometheus
+  remote_user: root
+  roles:
+    - prometheus

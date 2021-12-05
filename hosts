@@ -80,8 +80,12 @@ hdss7-21
 [jenkins]
 hdss7-200
 
-[monitor]
-hdss7-11
+[nfs]
+hdss7-21
+hdss7-22
+hdss7-200
+
+[prometheus]
 hdss7-21
 hdss7-22
 hdss7-200

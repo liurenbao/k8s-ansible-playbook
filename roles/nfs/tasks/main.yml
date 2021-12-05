@@ -1,0 +1,17 @@
+---
+- name: 在nfs服务端和node节点上下载nfs，服务端是hdss7-200主机
+  shell: yum install nfs-utils -y
+
+- name: 配置NFS服务
+  template:
+    src: exports.j2
+    dest: /etc/exports
+    mode: 0644
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 在服务端创建nfs目录
+  shell: mkdir -p /data/nfs-volume
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 启动NFS且设置为开机自启动
+  shell: systemctl start nfs && systemctl enable nfs

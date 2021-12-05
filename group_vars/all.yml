@@ -15,3 +15,5 @@ node200: 10.4.7.200
 gateway: 10.4.7.2
 
 virtual_ipaddress: 10.4.7.10
+
+network_segment: 10.4.7.0/24
