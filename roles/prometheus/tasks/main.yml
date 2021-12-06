@@ -67,8 +67,55 @@
     - cadivisor-ds.yaml
   when: inventory_hostname == 'hdss7-200'
 
+- name: 挂载cgroup目录
+  shell: mount -o remount,rw /sys/fs/cgroup/
+  when: inventory_hostname == 'hdss7-21' or inventory_hostname == 'hdss7-22'
+
+- name: 设置cgroup软链接
+  shell: ln -s /sys/fs/cgroup/cpu,cpuacct /sys/fs/cgroup/cpuacct,cpu
+  when: inventory_hostname == 'hdss7-21' or inventory_hostname == 'hdss7-22'
+
 - name: 使用kubectl apply -f应用yaml文件
   shell: kubectl apply -f http://k8s-yaml.od.com/cadvisor/{{ item }}
   with_items:
     - cadivisor-ds.yaml
+  when: inventory_hostname == 'hdss7-21'
+
+- name: docker拉取blackbox-exporter:v0.15.1镜像
+  shell: docker pull prom/blackbox-exporter:v0.15.1
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建blackbox-exporter目录
+  shell: mkdir -p /data/k8s-yaml/blackbox-exporter
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建blackbox-exporter相关yaml文件
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/blackbox-exporter/{{ item }}
+    mode: 0644
+  with_items:
+    - blackbox-exporter-cm.yaml
+    - blackbox-exporter-dp.yaml
+    - blackbox-exporter-svc.yaml
+    - blackbox-exporter-ingress.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: config named
+  lineinfile:
+    dest: /var/named/od.com.zone
+    regexp: '^blackbox'
+    line: 'blackbox      A {{ virtual_ipaddress }}'
+  when: inventory_hostname == 'hdss7-11'
+
+- name: 重启named
+  shell: systemctl restart named
+
+- name: 使用kubectl apply -f应用yaml文件
+  shell: kubectl apply -f http://k8s-yaml.od.com/blackbox-exporter/{{ item }}
+  with_items:
+    - blackbox-exporter-cm.yaml
+    - blackbox-exporter-dp.yaml
+    - blackbox-exporter-svc.yaml
+    - blackbox-exporter-ingress.yaml
   when: inventory_hostname == 'hdss7-21'
