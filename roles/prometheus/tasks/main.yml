@@ -110,6 +110,7 @@
 
 - name: 重启named
   shell: systemctl restart named
+  when: inventory_hostname == 'hdss7-11'
 
 - name: 使用kubectl apply -f应用yaml文件
   shell: kubectl apply -f http://k8s-yaml.od.com/blackbox-exporter/{{ item }}
