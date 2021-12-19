@@ -1,0 +1,29 @@
+---
+- name: 创建相关目录
+  shell: mkdir -p /data/k8s-yaml/k8s-guide
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建k8s guide redis相关yaml文件
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/k8s-guide/{{ item }}
+    mode: 0644
+  with_items:
+    - frontend-controller.yaml
+    - frontend-service.yaml
+    - redis-master-controller.yaml
+    - redis-master-service.yaml
+    - redis-slave-controller.yaml
+    - redis-slave-service.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用kubectl create -f "{{ item }}"
+  shell: kubectl create -f "http://k8s-yaml.od.com/k8s-guide/{{ item }}"
+  with_items:
+    - redis-master-controller.yaml
+    - redis-master-service.yaml
+    - redis-slave-controller.yaml
+    - redis-slave-service.yaml
+    - frontend-controller.yaml
+    - frontend-service.yaml
+  when: inventory_hostname == 'hdss7-21'
