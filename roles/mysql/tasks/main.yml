@@ -1,0 +1,28 @@
+---
+- name: 创建宿主机挂载目录
+  shell: mkdir -p /mnt/data
+  when: inventory_hostname != 'hdss7-200'
+
+- name: 创建运维主机相关目录
+  shell: mkdir -p /data/k8s-yaml/mysql
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建mysql相关yaml文件
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/mysql/{{ item }}
+    mode: 0644
+  with_items:
+    - mysql-svc.yaml
+    - mysql-dp.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用kubectl create -f "{{ item }}"
+  shell: kubectl create -f "http://k8s-yaml.od.com/mysql/{{ item }}"
+  with_items:
+    - mysql-svc.yaml
+    - mysql-dp.yaml
+  when: inventory_hostname == 'hdss7-21'
+
+- name: mysql默认账号密码是root password
+  shell: ls
