@@ -1,0 +1,18 @@
+---
+- name: 拉取mongo yaml文件
+  shell:
+    cmd: git clone https://github.com/scriptcamp/kubernetes-mongodb.git
+    chdir: /root
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 使用kubectl apply -f ./ 创建pod
+  shell:
+    cmd: kubectl apply -f ./
+    chdir: /root/kubernetes-mongodb
+  when: inventory_hostname == 'hdss7-21'
+
+- name: 登录方式，进入kube exec -it mongo-client pod
+  shell: ls
+
+- name: 连接命令
+  shell:  mongo --host mongo-nodeport-svc --port 27017 -u adminuser -p password123
