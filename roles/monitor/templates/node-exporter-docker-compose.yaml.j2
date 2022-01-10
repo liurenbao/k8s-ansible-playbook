@@ -1,0 +1,13 @@
+version: "3"
+services:
+    node-exporter:
+        image: node-exporter:1.0.1
+        container_name: node-exporter
+        ports:
+            - 9100:9100
+        volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /:/rootfs:ro
+        restart: always
+        network_mode: "host"

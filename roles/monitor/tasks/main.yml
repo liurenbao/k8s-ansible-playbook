@@ -1,0 +1,27 @@
+---
+- name: 这是使用docker-compose部署单机版的监控
+  shell: ls
+
+- name: 创建monitor相关目录
+  shell: mkdir -p /data/prometheus
+
+- name: 创建monitor相关目录
+  shell: mkdir -p /opt/monitor
+
+- name: 配置prometheus.default.yaml.j2文件
+  template:
+    src: "{{ item }}.j2"
+    dest: /opt/monitor/prometheus/{{ item }}
+    mode: 0644
+  with_items:
+    - node-exporter-docker-compose.yaml
+    - prometheus.default.yaml
+    - prometheus-docker-compose.yaml
+
+- name: 下载docker-compose
+  shell: yum install docker-compose -y
+
+- name: 部署监控
+  shell:
+    cmd: docker-compose up -d
+    chdir: /opt/monitor
