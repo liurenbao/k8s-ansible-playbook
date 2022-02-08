@@ -1,0 +1,32 @@
+---
+- name: 安装zsh前需要的工具
+  shell: yum -y install zsh git wget
+
+- name: 设置zsh
+  shell: chsh -s /bin/zsh
+
+- name: 配置安装zsh脚本
+  template:
+    src: install_zsh.sh.j2
+    dest: /opt/install_zsh.sh
+    mode: 0755
+
+- name: 开始使用zsh脚本进行安装，有可能因为网络原因导致失败
+  shell: sh /opt/install_zsh.sh
+
+- name: 安装zsh插件，有可能因为网络原因导致失败
+  shell:
+    cmd: git clone {{ item }}
+    chdir: /root/.oh-my-zsh/custom/plugins/
+  with_items:
+    - https://github.com/zsh-users/zsh-syntax-highlighting.git
+    - https://github.com/zsh-users/zsh-autosuggestions.git
+
+- name: 修改.zshrc配置文件
+  shell: sed -i 's/plugins=(git)/plugins=(\ngit\nzsh-autosuggestions\nzsh-syntax-highlighting\n)/g' /root/.zshrc
+
+- name: 设置zsh显示主机名
+  shell: echo "PROMPT=%m\ \$PROMPT" >> /root/.zshrc
+
+- name: source /root/.zshrc
+  shell: source /root/.zshrc
