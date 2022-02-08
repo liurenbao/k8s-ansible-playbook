@@ -24,6 +24,12 @@
 - name: stop firewalld
   shell: systemctl stop firewalld && systemctl disable firewalld
 
+- name: 关闭swap
+  shell: swapoff -a
+
+- name: 关闭swap,修改/etc/fstab文件
+  shell: sed -i '/swap/s/^/#/' /etc/fstab
+
 - name: 设置时区为上海
   shell: timedatectl set-timezone Asia/Shanghai
 
