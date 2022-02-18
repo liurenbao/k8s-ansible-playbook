@@ -99,8 +99,8 @@
   roles:
     - nfs
 
-- name: 安装prometheus
-  hosts: prometheus
-  remote_user: root
-  roles:
-    - prometheus
+#- name: 安装prometheus
+#  hosts: prometheus
+#  remote_user: root
+#  roles:
+#    - prometheus
