@@ -1,6 +1,6 @@
 ---
 - name: yum安装java
-  shell: yum install -y java-1.8.0-openjdk*
+  shell: yum install -y java-1.8.0-openjdk
 
 - name: 查看Java版本
   shell: java -version
