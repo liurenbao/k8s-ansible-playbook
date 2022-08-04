@@ -33,8 +33,17 @@
 - name: 设置时区为上海
   shell: timedatectl set-timezone Asia/Shanghai
 
+- name: 清除原有的yum源
+  shell: mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+
 - name: install epal
-  shell: curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+  shell: wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+
+- name: 清除yum缓存
+  shell: yum clean all
+
+- name: 构建yum缓存
+  shell: yum makecache
 
 - name: 下载ntpdate
   shell: yum -y install ntpdate
