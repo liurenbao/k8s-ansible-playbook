@@ -1,0 +1,21 @@
+---
+- name: 创建相关目录
+  shell: mkdir -p /data/k8s-yaml/kibana
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 创建资源配置清单
+  template:
+    src: "{{ item }}.j2"
+    dest: /data/k8s-yaml/kibana/{{ item }}
+    mode: 0644
+  with_items:
+    - svc.yaml
+    - dp.yaml
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 使用陈述式资源管理方法去apply声明式资源配置清单
+  shell: kubectl apply -f http://k8s-yaml.od.com/kibana/{{ item }}
+  with_items:
+    - svc.yaml
+    - dp.yaml
+  when: inventory_hostname == 'hdss7-21'
