@@ -104,3 +104,9 @@
 #  remote_user: root
 #  roles:
 #    - prometheus
+
+- name: 安装kibana
+  hosts: kibana
+  remote_user: root
+  roles:
+    - kibana
