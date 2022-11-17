@@ -1,0 +1,17 @@
+- name: "allow port {{ jms_port }}"
+  when: prj_name == 'jumpserver'
+  firewalld:
+    immediate: yes
+    permanent: yes
+    zone: public
+    port: "{{ jms_port }}/tcp"
+    state: enabled
+
+- name: "allow port {{ coco_ssh_port }}"
+  when: prj_name == 'coco'
+  firewalld:
+    immediate: yes
+    permanent: yes
+    zone: public
+    port: "{{ coco_ssh_port }}/tcp"
+    state: enabled

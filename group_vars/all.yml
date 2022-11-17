@@ -17,3 +17,33 @@ gateway: 10.4.7.2
 virtual_ipaddress: 10.4.7.10
 
 network_segment: 10.4.7.0/24
+
+# -------------------------------- #
+## 自定义 redis 服务地址。注释则默认为 127.0.0.1
+# jms_redis_ext_url: "jms-redis"
+# jms_redis_ext_port: "6379"
+# jms_redis_ext_pass: ""
+
+## 自定义 mysql 服务地址。注释则默认为 127.0.0.1
+# jms_db_ext_url: "jms-mysql"
+## 外部数据库端口
+# jms_db_ext_port: "3306"
+## 外部数据库登录密码。
+# jms_db_ext_pass: ""
+# -------------------------------- #
+
+## 数据库用户名
+jms_db_user: jumpserver
+## 数据库名称
+jms_db_name: jumpserver
+
+# -------------------------------- #
+## 本地数据库密码。
+## 请手动修改为你自己用的密码，并且使用 ansible-vault 做加密。以下自动生成的密码仅作为测试用途。
+jms_db_pass: "{{ lookup('password', inventory_dir + '/credentials' + '/mysql_user_password length=16 chars=ascii_letters,digits,hexdigits,punctuation') }}"
+
+## templates/jumpserver/config.yml.j2
+jms_sec_key: "{{ lookup('password', inventory_dir + '/credentials' + '/jumpserver_secret_key length=50 chars=ascii_letters,digits,hexdigits') }}"
+jms_bootstrap_token: "{{ lookup('password', inventory_dir + '/credentials' + '/jumpserver_bootstrap_token length=17') }}"
+jms_port: 8080
+# -------------------------------- #
