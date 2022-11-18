@@ -1,0 +1,35 @@
+---
+- name: 安装python相关依赖
+  shell:  yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel
+
+- name: 下载python安装包
+  shell: wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
+  chdir: /opt
+
+- name: 解压python安装包
+  shell: tar -zxvf Python-3.8.6.tgz
+  chdir: /opt
+
+- name: 创建相关目录
+  shell: mkdir -p /usr/local/python3
+
+- name: 编译安装
+  shell: ./configure --prefix=/usr/local/python3
+  chdir: /opt/Python-3.8.6
+
+- name: 编译
+  shell: make && make install
+  chdir: /opt/Python-3.8.6
+
+- name: 创建python3软链接
+  shell: ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+
+- name: 添加pip3的软链接
+  shell: ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+
+- name: 修改python pip源为清华源
+  shell: pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+  # 阿里源
+  # global.index-url https://mirrors.aliyun.com/pypi/simple/
+  # 腾讯源
+  # global.index-url http://mirrors.cloud.tencent.com/pypi/simple
