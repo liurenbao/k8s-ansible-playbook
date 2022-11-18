@@ -30,6 +30,6 @@
 - name: 修改python pip源为清华源
   shell: pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
   # 阿里源
-  # global.index-url https://mirrors.aliyun.com/pypi/simple/
+  # pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
   # 腾讯源
-  # global.index-url http://mirrors.cloud.tencent.com/pypi/simple
+  # pip3 config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple
