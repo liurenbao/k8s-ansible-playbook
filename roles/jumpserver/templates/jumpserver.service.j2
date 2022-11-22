@@ -1,0 +1,20 @@
+[Unit]
+Description=jms
+{% if ansible_distribution == 'CentOS' %}
+After=network.target mariadb.service redis.service
+Wants=mariadb.service redis.service
+{% elif ansible_distribution == 'Ubuntu'%}
+After=network.target mysql.service redis-server.service
+Wants=mysql.service redis-server.service
+{% endif %}
+
+[Service]
+Type=forking
+Environment="PATH=/opt/py3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin"
+ExecStart=/opt/jumpserver/jms start all -d
+ExecReload=
+ExecStop=/opt/jumpserver/jms stop
+TimeoutStartSec=3600
+
+[Install]
+WantedBy=multi-user.target
