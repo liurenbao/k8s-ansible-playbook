@@ -110,3 +110,12 @@
   remote_user: root
   roles:
     - kibana
+
+- name: 安装jumpserver
+  hosts: jumpserver
+  become: yes
+  roles:
+    - jms_coco
+  vars:
+    prj_name: jumpserver
+    prj_port: "{{ jms_port }}"
