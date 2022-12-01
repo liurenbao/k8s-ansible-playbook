@@ -1,4 +1,7 @@
 ---
+- name: install tools
+  shell: yum install -y sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils
+
 - name: copy rsa.pub
   authorized_key: user=root key="{{ lookup('file', '{{ root_path }}/.ssh/id_rsa.pub') }}"
   tags:
@@ -33,17 +36,17 @@
 - name: 设置时区为上海
   shell: timedatectl set-timezone Asia/Shanghai
 
-- name: 清除原有的yum源
-  shell: mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
-
-- name: install epal
-  shell: wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
-
-- name: 清除yum缓存
-  shell: yum clean all
-
-- name: 构建yum缓存
-  shell: yum makecache
+#- name: 清除原有的yum源
+#  shell: mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+#
+#- name: install epal
+#  shell: wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+#
+#- name: 清除yum缓存
+#  shell: yum clean all
+#
+#- name: 构建yum缓存
+#  shell: yum makecache
 
 - name: 下载ntpdate
   shell: yum -y install ntpdate
@@ -59,9 +62,6 @@
 - name: 设置ntp开机自启动
   shell: systemctl start ntpdate && systemctl enable ntpdate
   ignore_errors: yes
-
-- name: install tools
-  shell: yum install -y sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils
 
 ## 主机和业务需要分开，但是主机上又跑了业务
 ## 因此需要设置主机域和业务域，能够将其关联起来
