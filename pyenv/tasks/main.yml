@@ -1,0 +1,33 @@
+---
+- name: git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+  shell: git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+
+- name: exec $SHELL
+  shell: exec $SHELL
+
+- name: git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+  shell: git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+
+- name: 安装pyenv，配置pyenv环境变量
+  shell: echo "{{ item }}" >> ~/.bashrc
+  with_items:
+    - 'export PYENV_ROOT="$HOME/.pyenv"'
+    - 'export PATH="$PYENV_ROOT/bin:$PATH"'
+    - -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi'
+    - 'eval "$(pyenv virtualenv-init -)"'
+
+- name: exec $SHELL
+  shell: exec $SHELL
+
+- name: 创建python安装包存放目录
+  shell: mkdir -p ~/.pyenv/cache
+
+- name: 下载python安装包
+  shell: wget https://www.python.org/ftp/python/3.7.13/Python-3.7.13.tar.xz
+  chdir: ~/.pyenv/cache
+
+- name: yum安装python所需要依赖工具
+  shell: yum -y install patch gcc zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel
+
+- name: pyenv安装python版本
+  shell: pyenv install Python-3.7.13.tar.xz
