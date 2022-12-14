@@ -1,6 +1,6 @@
 ---
 - name: 安装python相关依赖
-  shell:  yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel
+  shell:  yum -y install gcc zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel
 
 - name: 下载python安装包
   shell: wget https://www.python.org/ftp/python/3.8.6/Python-3.8.6.tgz
