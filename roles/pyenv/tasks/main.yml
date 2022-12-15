@@ -5,16 +5,19 @@
 - name: exec $SHELL
   shell: exec $SHELL
 
-- name: git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-  shell: git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+- name: git clone https://github.com/pyenv/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+  shell: git clone https://github.com/pyenv/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
 
 - name: 安装pyenv，配置pyenv环境变量
-  shell: echo "{{ item }}" >> ~/.bashrc
+  shell: echo {{ item }} >> ~/.bashrc
   with_items:
-    - 'export PYENV_ROOT="$HOME/.pyenv"'
-    - 'export PATH="$PYENV_ROOT/bin:$PATH"'
+    - export PYENV_ROOT=$HOME/.pyenv
+    - export PATH=$PYENV_ROOT/bin:$PATH
     - -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi'
-    - 'eval "$(pyenv virtualenv-init -)"'
+    - eval "$(pyenv virtualenv-init -)"
+    - eval "$(pyenv init -)"
+    - alias pyenva='pyenv activate'
+    - alias pyenvd='pyenv deactivate'
 
 - name: exec $SHELL
   shell: exec $SHELL
@@ -30,4 +33,4 @@
   shell: yum -y install patch gcc zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel libffi-devel
 
 - name: pyenv安装python版本
-  shell: pyenv install Python-3.7.13.tar.xz
+  shell: pyenv install -v 3.7.13
