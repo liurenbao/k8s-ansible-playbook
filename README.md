@@ -2,6 +2,11 @@
 
 这是一个k8s和ansible相结合的学习项目，使用ansible在**centos服务器**上一键部署K8S高可用集群。
 
+## 感谢
+
+感谢Jetbrain为开源事业提供的支持。
+![img.png](logo%2Fimg.png)
+
 ## 项目部署
 
 进入到k8s项目目录下，执行命令：
@@ -314,5 +319,4 @@ subjects:
     - name: 查看svc
       shell: kubectl get svc
 ```
-
 
