@@ -1,6 +1,6 @@
 ---
 - name: 安装zsh前需要的工具
-  shell: yum -y install zsh git wget
+  shell: yum -y install zsh git wget vim
 
 - name: 设置zsh
   shell: chsh -s /bin/zsh
