@@ -1,6 +1,28 @@
 ---
+- name: 设置proxy
+  blockinfile:
+    path: /etc/profile
+    block: |
+      function pof() {
+        unset http_proxy
+        unset https_proxy
+        echo -e "已关闭代理"
+        curl cip.cc
+      }
+
+      function pon() {
+        export http_proxy=http://192.168.50.23:1080
+        export https_proxy=$http_proxy
+        echo -e "已开启代理"
+        curl cip.cc
+      }
+
+      function pos() {
+        echo $http_proxy
+      }
+
 - name: 安装zsh前需要的工具
-  shell: yum -y install zsh git wget vim
+  shell: yum -y install zsh git wget vim net-tools
 
 - name: 设置zsh
   shell: chsh -s /bin/zsh
@@ -12,11 +34,11 @@
     mode: 0755
 
 - name: 开始使用zsh脚本进行安装，有可能因为网络原因导致失败
-  shell: sh /opt/install_zsh.sh
+  shell: source /etc/profile && pon && sh /opt/install_zsh.sh
 
 - name: 安装zsh插件，有可能因为网络原因导致失败
   shell:
-    cmd: git clone {{ item }}
+    cmd: cd /root/.oh-my-zsh/custom/plugins/ && source /etc/profile && pon && git clone {{ item }}
     chdir: /root/.oh-my-zsh/custom/plugins/
   with_items:
     - https://github.com/zsh-users/zsh-syntax-highlighting.git
