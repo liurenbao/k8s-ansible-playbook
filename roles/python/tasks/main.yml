@@ -7,18 +7,18 @@
   chdir: /opt
 
 - name: 解压python安装包
-  shell: tar -zxvf Python-3.8.6.tgz
+  shell: tar -zxvf /opt/Python-3.8.6.tgz
   chdir: /opt
 
 - name: 创建相关目录
   shell: mkdir -p /usr/local/python3
 
 - name: 编译安装
-  shell: ./configure --prefix=/usr/local/python3
+  shell: cd /opt/Python-3.8.6 && ./configure --prefix=/usr/local/python3
   chdir: /opt/Python-3.8.6
 
 - name: 编译
-  shell: make && make install
+  shell: cd /opt/Python-3.8.6 && make && make install
   chdir: /opt/Python-3.8.6
 
 - name: 创建python3软链接

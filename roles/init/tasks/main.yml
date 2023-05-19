@@ -1,6 +1,6 @@
 ---
 - name: install tools
-  shell: yum install -y sshpass wget net-tools telnet tree nmap sysstat lrzsz dos2unix bind-utils
+  shell: yum install -y sshpass wget net-tools telnet tree vim git ntpdate
 
 - name: copy rsa.pub
   authorized_key: user=root key="{{ lookup('file', '{{ root_path }}/.ssh/id_rsa.pub') }}"
@@ -47,10 +47,6 @@
 #
 #- name: 构建yum缓存
 #  shell: yum makecache
-
-- name: 下载ntpdate
-  shell: yum -y install ntpdate
-  ignore_errors: yes
 
 - name: 时间同步
   shell: "{{ item }}"
