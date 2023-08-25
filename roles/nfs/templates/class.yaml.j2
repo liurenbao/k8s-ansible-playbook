@@ -1,0 +1,7 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client
+provisioner: k8s-sigs.io/nfs-subdir-external-provisioner # 如果改变, 需要跟deployment文件中环境变量 PROVISIONER_NAME一致
+parameters:
+  archiveOnDelete: "false"

@@ -1,0 +1,6 @@
+---
+- name: 下载helm
+  shell: cd /opt && pon && curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+
+- name: 执行安装命令
+  shell: bash /opt/get_helm.sh

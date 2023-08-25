@@ -13,5 +13,54 @@
   shell: mkdir -p /data/nfs-volume
   when: inventory_hostname == 'hdss7-200'
 
+- name: 给目录设置777权限
+  shell: chmod 777 /data/nfs-volume
+  when: inventory_hostname == 'hdss7-200'
+
 - name: 启动NFS且设置为开机自启动
   shell: systemctl start nfs && systemctl enable nfs
+
+- name: 在客户端安装nfs-utils
+  shell: yum install nfs-utils -y
+  when: inventory_hostname != 'hdss7-200'
+
+- name: 在客户端创建对应目录
+  shell: mkdir -p /data/nfs-volume
+  when: inventory_hostname != 'hdss7-200'
+
+- name: 配置NFS存储类
+  shell: git clone https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner.git
+  chdir: /opt
+  when: inventory_hostname == 'hdss7-200'
+
+- name: 配置deploy文件
+  shell: mv /opt/nfs-subdir-external-provisioner/deploy/*.yaml /opt/nfs-subdir-external-provisioner
+  chdir: /opt/nfs-subdir-external-provisioner
+
+- name: 配置namespace
+  shell: "sed -i '' \"s/namespace:.*/namespace: nfs/g\" rbac.yaml deployment.yaml"
+
+- name: 修改deployment.yaml文件
+  template:
+    src: deployment.yaml.j2
+    dest: /opt/nfs-subdir-external-provisioner/deployment.yaml
+    mode: 0644
+
+- name: 创建namespace
+  shell: cd /opt/nfs-subdir-external-provisioner && kubectl create ns nfs  # 创建命名空间
+
+- name: 创建rbac
+  shell: cd /opt/nfs-subdir-external-provisioner && kubectl apply -f rbac.yaml
+
+- name: 部署nfs-provisioner
+  shell: cd /opt/nfs-subdir-external-provisioner && kubectl apply -f deployment.yaml
+
+- name: 创建StorageClass
+  shell: cd /opt/nfs-subdir-external-provisioner && kubectl apply -f class.yaml
+
+- name: 创建PVC
+  shell: cd /opt/nfs-subdir-external-provisioner && kubectl apply -f test-claim.yaml
+  when: inventory_hostname != 'hdss7-200'
+
+- name: 查看PVC
+  shell: kubectl get pvc -n nfs
